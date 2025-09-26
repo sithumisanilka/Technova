@@ -1,0 +1,224 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* SOLEKTA Laptop Shop Design System - Modern Tech Aesthetic */
+
+@layer base {
+  :root {
+    /* Base Colors - Clean Tech Palette */
+    --background: 250 250% 98%;
+    --foreground: 220 15% 15%;
+
+    --card: 0 0% 100%;
+    --card-foreground: 220 15% 15%;
+
+    --popover: 0 0% 100%;
+    --popover-foreground: 220 15% 15%;
+
+    /* Primary - Tech Blue */
+    --primary: 210 100% 50%;
+    --primary-foreground: 0 0% 100%;
+    --primary-glow: 210 100% 60%;
+
+    /* Secondary - Elegant Gray */
+    --secondary: 220 15% 95%;
+    --secondary-foreground: 220 15% 25%;
+
+    /* Muted - Subtle Background */
+    --muted: 220 15% 96%;
+    --muted-foreground: 220 10% 50%;
+
+    /* Accent - Electric Blue */
+    --accent: 200 100% 55%;
+    --accent-foreground: 0 0% 100%;
+
+    /* Success - Modern Green */
+    --success: 145 80% 45%;
+    --success-foreground: 0 0% 100%;
+
+    /* Warning - Bright Orange */
+    --warning: 35 100% 55%;
+    --warning-foreground: 0 0% 100%;
+
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 0 0% 100%;
+
+    --border: 220 15% 90%;
+    --input: 220 15% 95%;
+    --ring: 210 100% 50%;
+
+    --radius: 0.75rem;
+
+    /* Gradients - Beautiful Tech Effects */
+    --gradient-primary: linear-gradient(135deg, hsl(var(--primary)), hsl(var(--primary-glow)));
+    --gradient-secondary: linear-gradient(135deg, hsl(var(--secondary)), hsl(var(--muted)));
+    --gradient-hero: linear-gradient(135deg, hsl(210 100% 45%), hsl(200 100% 50%));
+    --gradient-card: linear-gradient(145deg, hsl(0 0% 100%), hsl(220 15% 98%));
+
+    /* Shadows - Elegant Depth */
+    --shadow-card: 0 4px 20px -2px hsl(220 15% 15% / 0.08);
+    --shadow-button: 0 2px 8px -2px hsl(var(--primary) / 0.3);
+    --shadow-hero: 0 20px 40px -10px hsl(var(--primary) / 0.2);
+
+    /* Sidebar */
+    --sidebar-background: 250 250% 99%;
+    --sidebar-foreground: 220 15% 25%;
+    --sidebar-primary: 210 100% 50%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 220 15% 96%;
+    --sidebar-accent-foreground: 220 15% 25%;
+    --sidebar-border: 220 15% 92%;
+    --sidebar-ring: 210 100% 50%;
+
+    /* Animations */
+    --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    --transition-bounce: all 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+  }
+
+  .dark {
+    --background: 220 25% 8%;
+    --foreground: 220 15% 95%;
+
+    --card: 220 25% 10%;
+    --card-foreground: 220 15% 95%;
+
+    --popover: 220 25% 10%;
+    --popover-foreground: 220 15% 95%;
+
+    --primary: 210 100% 55%;
+    --primary-foreground: 0 0% 100%;
+    --primary-glow: 210 100% 65%;
+
+    --secondary: 220 20% 15%;
+    --secondary-foreground: 220 15% 85%;
+
+    --muted: 220 20% 12%;
+    --muted-foreground: 220 10% 60%;
+
+    --accent: 200 100% 60%;
+    --accent-foreground: 0 0% 100%;
+
+    --success: 145 80% 50%;
+    --warning: 35 100% 60%;
+    --destructive: 0 84% 65%;
+    --destructive-foreground: 0 0% 100%;
+
+    --border: 220 20% 18%;
+    --input: 220 20% 15%;
+    --ring: 210 100% 55%;
+
+    --gradient-primary: linear-gradient(135deg, hsl(var(--primary)), hsl(var(--primary-glow)));
+    --gradient-secondary: linear-gradient(135deg, hsl(var(--secondary)), hsl(var(--muted)));
+    --gradient-hero: linear-gradient(135deg, hsl(210 100% 50%), hsl(200 100% 55%));
+    --gradient-card: linear-gradient(145deg, hsl(var(--card)), hsl(220 25% 12%));
+
+    --shadow-card: 0 4px 20px -2px hsl(0 0% 0% / 0.3);
+    --shadow-button: 0 2px 8px -2px hsl(var(--primary) / 0.4);
+    --shadow-hero: 0 20px 40px -10px hsl(var(--primary) / 0.3);
+
+    --sidebar-background: 220 25% 6%;
+    --sidebar-foreground: 220 15% 85%;
+    --sidebar-primary: 210 100% 55%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 220 20% 12%;
+    --sidebar-accent-foreground: 220 15% 85%;
+    --sidebar-border: 220 20% 15%;
+    --sidebar-ring: 210 100% 55%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground font-sans antialiased;
+    font-feature-settings: "rlig" 1, "calt" 1;
+  }
+
+  /* Scrollbar Styling */
+  ::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+
+  ::-webkit-scrollbar-track {
+    @apply bg-muted;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    @apply bg-muted-foreground/30 rounded-full;
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    @apply bg-muted-foreground/50;
+  }
+}
+
+@layer components {
+  /* Hero Section Styles */
+  .hero-gradient {
+    background: var(--gradient-hero);
+  }
+
+  .card-gradient {
+    background: var(--gradient-card);
+    box-shadow: var(--shadow-card);
+  }
+
+  /* Button Variants */
+  .btn-hero {
+    @apply bg-gradient-to-r from-primary to-primary-glow text-primary-foreground;
+    @apply shadow-[var(--shadow-button)] hover:shadow-lg;
+    @apply transition-all duration-300 hover:scale-105;
+  }
+
+  .btn-ghost-hero {
+    @apply bg-white/10 backdrop-blur-sm text-white border border-white/20;
+    @apply hover:bg-white/20 transition-all duration-300;
+  }
+
+  /* Loading Animation */
+  .loading-spin {
+    animation: spin 1s linear infinite;
+  }
+
+  @keyframes spin {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+  }
+
+  /* Fade In Animation */
+  .fade-in {
+    animation: fadeIn 0.6s ease-out forwards;
+  }
+
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+      transform: translateY(20px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  /* Slide Up Animation */
+  .slide-up {
+    animation: slideUp 0.5s ease-out forwards;
+  }
+
+  @keyframes slideUp {
+    from {
+      opacity: 0;
+      transform: translateY(30px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+}

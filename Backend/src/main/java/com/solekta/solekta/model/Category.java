@@ -1,13 +1,12 @@
 package com.solekta.solekta.model;
 
 import jakarta.persistence.*;
-import lombok.*;
-import com.solekta.solekta.model.Product;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import java.util.List;
 
 @Entity
-@Table(name = "category") @Getter @Setter @NoArgsConstructor @AllArgsConstructor
+@Table(name = "category")
 public class Category {
 
         @Id
@@ -19,7 +18,41 @@ public class Category {
 
         // One category can have many products
         @OneToMany(mappedBy = "category", cascade = CascadeType.ALL)
+        @JsonIgnore
         private List<Product> products;
 
+        // Constructors
+        public Category() { //JPA Need this
+        }
 
+        public Category(Long categoryId, String categoryName, List<Product> products) {
+                this.categoryId = categoryId;
+                this.categoryName = categoryName;
+                this.products = products;
+        }
+
+        // Getters & Setters
+        public Long getCategoryId() {
+                return categoryId;
+        }
+
+        public void setCategoryId(Long categoryId) {
+                this.categoryId = categoryId;
+        }
+
+        public String getCategoryName() {
+                return categoryName;
+        }
+
+        public void setCategoryName(String categoryName) {
+                this.categoryName = categoryName;
+        }
+
+        public List<Product> getProducts() {
+                return products;
+        }
+
+        public void setProducts(List<Product> products) {
+                this.products = products;
+        }
 }
