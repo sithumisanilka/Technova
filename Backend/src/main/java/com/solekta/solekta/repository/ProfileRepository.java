@@ -1,4 +1,8 @@
 package com.solekta.solekta.repository;
 
-public interface ProfileRepository {
+import com.solekta.solekta.model.Profile;
+import org.springframework.data.jpa.repository.JpaRepository;
+
+public interface ProfileRepository extends JpaRepository<Profile, Long> {
 }
+
