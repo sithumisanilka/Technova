@@ -1,179 +1,233 @@
-import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
-import { Cart, CartItem } from '@/types/order';
-import { cartApi } from '@/services/api';
-import { useAuth } from './AuthContext';
+import React, { createContext, useContext, useReducer, useEffect } from "react";
+import { Cart, CartItem, Product } from "@/types";
+import { toast } from "@/hooks/use-toast";
 
-interface CartContextType {
-  cart: Cart | null;
-  isLoading: boolean;
-  addToCart: (productId: number, quantity: number) => Promise<void>;
-  updateCartItemQuantity: (cartItemId: number, quantity: number) => Promise<void>;
-  removeFromCart: (cartItemId: number) => Promise<void>;
-  clearCart: () => Promise<void>;
-  refreshCart: () => Promise<void>;
-  getCartItemCount: () => number;
-  getCartTotal: () => number;
+interface CartState extends Cart {}
+
+type CartAction =
+  | { type: "ADD_ITEM"; payload: { product: Product; quantity: number } }
+  | { type: "REMOVE_ITEM"; payload: string }
+  | { type: "UPDATE_QUANTITY"; payload: { id: string; quantity: number } }
+  | { type: "CLEAR_CART" }
+  | { type: "LOAD_CART"; payload: Cart };
+
+interface CartContextType extends CartState {
+  addItem: (product: Product, quantity?: number) => void;
+  removeItem: (productId: string) => void;
+  updateQuantity: (id: string, quantity: number) => void;
+  clearCart: () => void;
+  getItemQuantity: (productId: string) => number;
 }
 
 const CartContext = createContext<CartContextType | undefined>(undefined);
 
-export const useCart = () => {
-  const context = useContext(CartContext);
-  if (context === undefined) {
-    throw new Error('useCart must be used within a CartProvider');
+const cartReducer = (state: CartState, action: CartAction): CartState => {
+  switch (action.type) {
+    case "ADD_ITEM": {
+      const { product, quantity } = action.payload;
+      const existingItem = state.items.find(
+        (item) => item.product.productId === product.productId
+      );
+
+      let updatedItems: CartItem[];
+
+      if (existingItem) {
+        updatedItems = state.items.map((item) =>
+          item.product.productId === product.productId
+            ? { ...item, quantity: item.quantity + quantity }
+            : item
+        );
+      } else {
+        const newItem: CartItem = {
+          id: `${product.productId}-${Date.now()}`,
+          product,
+          quantity,
+          price: product.price,
+        };
+        updatedItems = [...state.items, newItem];
+      }
+
+      const total = updatedItems.reduce(
+        (sum, item) => sum + item.price * item.quantity,
+        0
+      );
+      const itemCount = updatedItems.reduce(
+        (sum, item) => sum + item.quantity,
+        0
+      );
+
+      return {
+        items: updatedItems,
+        total,
+        itemCount,
+      };
+    }
+
+    case "REMOVE_ITEM": {
+      const updatedItems = state.items.filter(
+        (item) => item.product.productId.toString() !== action.payload
+      );
+      const total = updatedItems.reduce(
+        (sum, item) => sum + item.price * item.quantity,
+        0
+      );
+      const itemCount = updatedItems.reduce(
+        (sum, item) => sum + item.quantity,
+        0
+      );
+
+      return {
+        items: updatedItems,
+        total,
+        itemCount,
+      };
+    }
+
+    case "UPDATE_QUANTITY": {
+      const { id, quantity } = action.payload;
+
+      if (quantity <= 0) {
+        const updatedItems = state.items.filter((item) => item.id !== id);
+        const total = updatedItems.reduce(
+          (sum, item) => sum + item.price * item.quantity,
+          0
+        );
+        const itemCount = updatedItems.reduce(
+          (sum, item) => sum + item.quantity,
+          0
+        );
+
+        return {
+          items: updatedItems,
+          total,
+          itemCount,
+        };
+      }
+
+      const updatedItems = state.items.map((item) =>
+        item.id === id ? { ...item, quantity } : item
+      );
+
+      const total = updatedItems.reduce(
+        (sum, item) => sum + item.price * item.quantity,
+        0
+      );
+      const itemCount = updatedItems.reduce(
+        (sum, item) => sum + item.quantity,
+        0
+      );
+
+      return {
+        items: updatedItems,
+        total,
+        itemCount,
+      };
+    }
+
+    case "CLEAR_CART":
+      return {
+        items: [],
+        total: 0,
+        itemCount: 0,
+      };
+
+    case "LOAD_CART":
+      return action.payload;
+
+    default:
+      return state;
   }
-  return context;
 };
 
-interface CartProviderProps {
-  children: ReactNode;
-}
+const initialState: CartState = {
+  items: [],
+  total: 0,
+  itemCount: 0,
+};
 
-export const CartProvider: React.FC<CartProviderProps> = ({ children }) => {
-  const [cart, setCart] = useState<Cart | null>(null);
-  const [isLoading, setIsLoading] = useState(false);
-  const { user, isAuthenticated } = useAuth();
+export const CartProvider: React.FC<{ children: React.ReactNode }> = ({
+  children,
+}) => {
+  const [state, dispatch] = useReducer(cartReducer, initialState);
 
-  // Load cart when user is authenticated
+  // Load cart from localStorage on mount
   useEffect(() => {
-    if (isAuthenticated && user) {
-      loadCart();
-    } else {
-      setCart(null);
-    }
-  }, [isAuthenticated, user]);
-
-  const loadCart = async () => {
-    if (!user) return;
-    
-    try {
-      setIsLoading(true);
-      const cartData = await cartApi.getCartByCustomerId(user.id);
-      setCart(cartData);
-    } catch (error) {
-      console.error('Error loading cart:', error);
-      // If cart doesn't exist, create an empty one
-      setCart({
-        id: 0,
-        customerId: user.id,
-        items: [],
-        subtotal: 0,
-        tax: 0,
-        shippingCost: 0,
-        totalAmount: 0,
-        createdAt: new Date().toISOString(),
-        updatedAt: new Date().toISOString()
-      });
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  const addToCart = async (productId: number, quantity: number): Promise<void> => {
-    if (!user) {
-      throw new Error('You must be logged in to add items to cart');
-    }
-
-    try {
-      setIsLoading(true);
-      const updatedCart = await cartApi.addItemToCart(user.id, productId, quantity);
-      setCart(updatedCart);
-    } catch (error) {
-      console.error('Error adding to cart:', error);
-      throw error;
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  const updateCartItemQuantity = async (cartItemId: number, quantity: number): Promise<void> => {
-    if (!user) return;
-
-    try {
-      setIsLoading(true);
-      if (quantity <= 0) {
-        await cartApi.removeItemFromCart(cartItemId);
-      } else {
-        await cartApi.updateCartItemQuantity(cartItemId, quantity);
+    const savedCart = localStorage.getItem("cart");
+    if (savedCart) {
+      try {
+        const cart = JSON.parse(savedCart);
+        dispatch({ type: "LOAD_CART", payload: cart });
+      } catch (error) {
+        console.error("Error loading cart from localStorage:", error);
       }
-      await loadCart(); // Refresh cart after update
-    } catch (error) {
-      console.error('Error updating cart item:', error);
-      throw error;
-    } finally {
-      setIsLoading(false);
     }
-  };
+  }, []);
 
-  const removeFromCart = async (cartItemId: number): Promise<void> => {
-    if (!user) return;
+  // Save cart to localStorage whenever it changes
+  useEffect(() => {
+    localStorage.setItem("cart", JSON.stringify(state));
+  }, [state]);
 
-    try {
-      setIsLoading(true);
-      await cartApi.removeItemFromCart(cartItemId);
-      await loadCart(); // Refresh cart after removal
-    } catch (error) {
-      console.error('Error removing from cart:', error);
-      throw error;
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  const clearCart = async (): Promise<void> => {
-    if (!user) return;
-
-    try {
-      setIsLoading(true);
-      await cartApi.clearCart(user.id);
-      setCart({
-        id: 0,
-        customerId: user.id,
-        items: [],
-        subtotal: 0,
-        tax: 0,
-        shippingCost: 0,
-        totalAmount: 0,
-        createdAt: new Date().toISOString(),
-        updatedAt: new Date().toISOString()
+  const addItem = (product: Product, quantity: number = 1) => {
+    if (product.quantity < quantity) {
+      toast({
+        title: "Insufficient Stock",
+        description: `Only ${product.quantity} items available in stock.`,
+        variant: "destructive",
       });
-    } catch (error) {
-      console.error('Error clearing cart:', error);
-      throw error;
-    } finally {
-      setIsLoading(false);
+      return;
     }
+
+    dispatch({ type: "ADD_ITEM", payload: { product, quantity } });
+    toast({
+      title: "Added to Cart",
+      description: `${product.name} has been added to your cart.`,
+    });
   };
 
-  const refreshCart = async (): Promise<void> => {
-    await loadCart();
+  const removeItem = (productId: string) => {
+    dispatch({ type: "REMOVE_ITEM", payload: productId });
+    toast({
+      title: "Removed from Cart",
+      description: "Item has been removed from your cart.",
+    });
   };
 
-  const getCartItemCount = (): number => {
-    if (!cart || !cart.items) return 0;
-    return cart.items.reduce((total, item) => total + item.quantity, 0);
+  const updateQuantity = (id: string, quantity: number) => {
+    dispatch({ type: "UPDATE_QUANTITY", payload: { id, quantity } });
   };
 
-  const getCartTotal = (): number => {
-    if (!cart) return 0;
-    return cart.totalAmount;
+  const clearCart = () => {
+    dispatch({ type: "CLEAR_CART" });
   };
 
-  const value: CartContextType = {
-    cart,
-    isLoading,
-    addToCart,
-    updateCartItemQuantity,
-    removeFromCart,
-    clearCart,
-    refreshCart,
-    getCartItemCount,
-    getCartTotal,
+  const getItemQuantity = (productId: string): number => {
+    const item = state.items.find(
+      (item) => item.product.productId.toString() === productId
+    );
+    return item ? item.quantity : 0;
   };
 
   return (
-    <CartContext.Provider value={value}>
+    <CartContext.Provider
+      value={{
+        ...state,
+        addItem,
+        removeItem,
+        updateQuantity,
+        clearCart,
+        getItemQuantity,
+      }}
+    >
       {children}
     </CartContext.Provider>
   );
+};
+
+export const useCart = () => {
+  const context = useContext(CartContext);
+  if (context === undefined) {
+    throw new Error("useCart must be used within a CartProvider");
+  }
+  return context;
 };

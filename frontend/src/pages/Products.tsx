@@ -1,344 +1,394 @@
-import React, { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
-import { Card, CardContent } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { productApi } from '@/services/api';
-import { useCart } from '@/context/CartContext';
-import { useAuth } from '@/context/AuthContext';
-import { Search, Star, ShoppingCart, Filter } from 'lucide-react';
-import { toast } from '@/hooks/use-toast';
+import { useState, useEffect } from "react";
+import { Link, useSearchParams } from "react-router-dom";
+import { Filter, Grid, List, Star, ShoppingCart, Loader2 } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { Input } from "@/components/ui/input";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import {
+  Sheet,
+  SheetContent,
+  SheetHeader,
+  SheetTitle,
+  SheetTrigger,
+} from "@/components/ui/sheet";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Label } from "@/components/ui/label";
+import { useCart } from "@/context/CartContext";
+import { productService } from "@/services/productService";
+import { Product } from "@/types";
 
-interface Product {
-  id: number;
-  name: string;
-  brand: string;
-  price: number;
-  discountPrice?: number;
-  description: string;
-  category: string;
-  sku: string;
-  stock: number;
-  imageUrl?: string;
-  rating?: number;
-  reviewCount?: number;
-}
+const brands = ["Apple", "Dell", "HP", "Lenovo", "ASUS", "Microsoft"];
+const categories = ["Gaming", "Business", "Premium", "Budget"];
 
-export const Products: React.FC = () => {
-  const { user, isAuthenticated } = useAuth();
-  const { addToCart } = useCart();
+export const Products = () => {
+  const [searchParams, setSearchParams] = useSearchParams();
+  const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
+  const [selectedBrands, setSelectedBrands] = useState<string[]>([]);
+  const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
+  const [priceRange, setPriceRange] = useState<[number, number]>([0, 300000]);
   const [products, setProducts] = useState<Product[]>([]);
-  const [filteredProducts, setFilteredProducts] = useState<Product[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
-  const [searchTerm, setSearchTerm] = useState('');
-  const [categoryFilter, setCategoryFilter] = useState<string>('ALL');
-  const [sortBy, setSortBy] = useState<string>('name');
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const { addItem } = useCart();
 
+  const searchQuery = searchParams.get("search") || "";
+  const sortBy = searchParams.get("sort") || "popularity";
+
+  // Load products from API
   useEffect(() => {
+    const loadProducts = async () => {
+      try {
+        setLoading(true);
+        setError(null);
+        const productsData = await productService.getProducts();
+        setProducts(productsData);
+      } catch (err) {
+        console.error("❌ Error loading products:", err);
+        setError("Failed to load products. Please try again later.");
+      } finally {
+        setLoading(false);
+      }
+    };
+
     loadProducts();
   }, []);
 
-  useEffect(() => {
-    filterAndSortProducts();
-  }, [products, searchTerm, categoryFilter, sortBy]);
-
-  const loadProducts = async () => {
-    try {
-      setIsLoading(true);
-      // Mock products for now - replace with actual API call
-      const mockProducts: Product[] = [
-        {
-          id: 1,
-          name: 'MacBook Pro 16"',
-          brand: 'Apple',
-          price: 2499,
-          discountPrice: 2299,
-          description: 'Powerful laptop with M2 Pro chip, perfect for professionals',
-          category: 'Laptop',
-          sku: 'MBP16-M2',
-          stock: 5,
-          rating: 4.9,
-          reviewCount: 128
-        },
-        {
-          id: 2,
-          name: 'Dell XPS 15',
-          brand: 'Dell',
-          price: 1899,
-          description: 'Premium ultrabook with stunning display and performance',
-          category: 'Laptop',
-          sku: 'DXP15-2024',
-          stock: 8,
-          rating: 4.7,
-          reviewCount: 94
-        },
-        {
-          id: 3,
-          name: 'ThinkPad X1 Carbon',
-          brand: 'Lenovo',
-          price: 1699,
-          discountPrice: 1549,
-          description: 'Business laptop with exceptional build quality',
-          category: 'Laptop',
-          sku: 'TXC1-G10',
-          stock: 12,
-          rating: 4.8,
-          reviewCount: 156
-        },
-        {
-          id: 4,
-          name: 'ASUS ROG Strix G15',
-          brand: 'ASUS',
-          price: 1299,
-          description: 'Gaming laptop with RTX 4060 and high refresh rate display',
-          category: 'Gaming',
-          sku: 'ASG15-RTX',
-          stock: 6,
-          rating: 4.6,
-          reviewCount: 89
-        },
-        {
-          id: 5,
-          name: 'HP Pavilion 15',
-          brand: 'HP',
-          price: 799,
-          description: 'Affordable laptop for everyday computing needs',
-          category: 'Budget',
-          sku: 'HPP15-2024',
-          stock: 15,
-          rating: 4.3,
-          reviewCount: 67
-        }
-      ];
-      setProducts(mockProducts);
-    } catch (error) {
-      console.error('Error loading products:', error);
-      toast({
-        title: "Error",
-        description: "Failed to load products. Please try again.",
-        variant: "destructive"
-      });
-    } finally {
-      setIsLoading(false);
+  const handleBrandChange = (brand: string, checked: boolean) => {
+    if (checked) {
+      setSelectedBrands([...selectedBrands, brand]);
+    } else {
+      setSelectedBrands(selectedBrands.filter((b) => b !== brand));
     }
   };
 
-  const filterAndSortProducts = () => {
-    let filtered = products;
-
-    // Filter by search term
-    if (searchTerm) {
-      filtered = filtered.filter(product =>
-        product.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        product.brand.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        product.description.toLowerCase().includes(searchTerm.toLowerCase())
-      );
-    }
-
-    // Filter by category
-    if (categoryFilter !== 'ALL') {
-      filtered = filtered.filter(product => product.category === categoryFilter);
-    }
-
-    // Sort products
-    filtered.sort((a, b) => {
-      switch (sortBy) {
-        case 'price-low':
-          return (a.discountPrice || a.price) - (b.discountPrice || b.price);
-        case 'price-high':
-          return (b.discountPrice || b.price) - (a.discountPrice || a.price);
-        case 'rating':
-          return (b.rating || 0) - (a.rating || 0);
-        case 'name':
-        default:
-          return a.name.localeCompare(b.name);
-      }
-    });
-
-    setFilteredProducts(filtered);
-  };
-
-  const handleAddToCart = async (product: Product) => {
-    if (!isAuthenticated) {
-      toast({
-        title: "Login Required",
-        description: "Please login to add items to your cart.",
-        variant: "destructive"
-      });
-      return;
-    }
-
-    try {
-      await addToCart(product.id, 1);
-      toast({
-        title: "Added to Cart",
-        description: `${product.name} has been added to your cart.`,
-      });
-    } catch (error) {
-      console.error('Error adding to cart:', error);
-      toast({
-        title: "Error",
-        description: "Failed to add item to cart. Please try again.",
-        variant: "destructive"
-      });
+  const handleCategoryChange = (category: string, checked: boolean) => {
+    if (checked) {
+      setSelectedCategories([...selectedCategories, category]);
+    } else {
+      setSelectedCategories(selectedCategories.filter((c) => c !== category));
     }
   };
 
-  const categories = ['ALL', 'Laptop', 'Gaming', 'Budget'];
+  const handleSortChange = (value: string) => {
+    const newParams = new URLSearchParams(searchParams);
+    newParams.set("sort", value);
+    setSearchParams(newParams);
+  };
 
-  if (isLoading) {
+  const filteredProducts = products.filter((product) => {
+    const matchesSearch =
+      searchQuery === "" ||
+      product.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      product.brand.toLowerCase().includes(searchQuery.toLowerCase());
+
+    const matchesBrand =
+      selectedBrands.length === 0 || selectedBrands.includes(product.brand);
+    const matchesCategory =
+      selectedCategories.length === 0 ||
+      (product.category &&
+        selectedCategories.includes(product.category.categoryName));
+    const matchesPrice =
+      product.price >= priceRange[0] && product.price <= priceRange[1];
+
+    return matchesSearch && matchesBrand && matchesCategory && matchesPrice;
+  });
+
+  const FilterContent = () => (
+    <div className="space-y-6">
+      {/* Price Range */}
+      <div>
+        <h3 className="font-semibold mb-3">Price Range</h3>
+        <div className="space-y-3">
+          <div className="flex items-center space-x-2">
+            <Input
+              type="number"
+              placeholder="Min"
+              value={priceRange[0]}
+              onChange={(e) =>
+                setPriceRange([Number(e.target.value), priceRange[1]])
+              }
+              className="w-20"
+            />
+            <span>-</span>
+            <Input
+              type="number"
+              placeholder="Max"
+              value={priceRange[1]}
+              onChange={(e) =>
+                setPriceRange([priceRange[0], Number(e.target.value)])
+              }
+              className="w-24"
+            />
+          </div>
+        </div>
+      </div>
+
+      {/* Brands */}
+      <div>
+        <h3 className="font-semibold mb-3">Brands</h3>
+        <div className="space-y-2">
+          {brands.map((brand) => (
+            <div key={brand} className="flex items-center space-x-2">
+              <Checkbox
+                id={`brand-${brand}`}
+                checked={selectedBrands.includes(brand)}
+                onCheckedChange={(checked) =>
+                  handleBrandChange(brand, checked as boolean)
+                }
+              />
+              <Label htmlFor={`brand-${brand}`} className="text-sm">
+                {brand}
+              </Label>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* Categories */}
+      <div>
+        <h3 className="font-semibold mb-3">Categories</h3>
+        <div className="space-y-2">
+          {categories.map((category) => (
+            <div key={category} className="flex items-center space-x-2">
+              <Checkbox
+                id={`category-${category}`}
+                checked={selectedCategories.includes(category)}
+                onCheckedChange={(checked) =>
+                  handleCategoryChange(category, checked as boolean)
+                }
+              />
+              <Label htmlFor={`category-${category}`} className="text-sm">
+                {category}
+              </Label>
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+
+  if (loading) {
     return (
       <div className="container mx-auto px-4 py-8">
         <div className="flex items-center justify-center min-h-[400px]">
-          <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-primary"></div>
+          <div className="flex items-center space-x-2">
+            <Loader2 className="h-6 w-6 animate-spin" />
+            <span>Loading products...</span>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="container mx-auto px-4 py-8">
+        <div className="text-center py-12">
+          <p className="text-destructive text-lg mb-4">{error}</p>
+          <Button onClick={() => window.location.reload()}>Try Again</Button>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="container mx-auto px-4 py-8">
+    <div className="container mx-auto px-4 py-8 fade-in">
       {/* Header */}
       <div className="mb-8">
-        <h1 className="text-3xl font-bold mb-2">Laptop Collection</h1>
-        <p className="text-gray-600">Find the perfect laptop for your needs</p>
+        <h1 className="text-3xl md:text-4xl font-bold mb-4">
+          {searchQuery ? `Search Results for "${searchQuery}"` : "All Products"}
+        </h1>
+        <p className="text-muted-foreground">
+          {filteredProducts.length} products found
+        </p>
+        <div className="mt-2 text-sm text-green-600">
+          Debug: Products loaded successfully! Total: {products.length},
+          Filtered: {filteredProducts.length}
+        </div>
       </div>
 
-      {/* Filters */}
-      <div className="mb-8">
-        <Card>
-          <CardContent className="p-6">
-            <div className="flex flex-col md:flex-row gap-4">
-              <div className="flex-1">
-                <div className="relative">
-                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
-                  <Input
-                    placeholder="Search laptops..."
-                    value={searchTerm}
-                    onChange={(e) => setSearchTerm(e.target.value)}
-                    className="pl-10"
-                  />
-                </div>
-              </div>
-              <div className="flex items-center space-x-2">
-                <Filter className="h-4 w-4 text-gray-400" />
-                <Select value={categoryFilter} onValueChange={setCategoryFilter}>
-                  <SelectTrigger className="w-[150px]">
-                    <SelectValue placeholder="Category" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {categories.map(category => (
-                      <SelectItem key={category} value={category}>
-                        {category}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-                <Select value={sortBy} onValueChange={setSortBy}>
-                  <SelectTrigger className="w-[150px]">
-                    <SelectValue placeholder="Sort by" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="name">Name</SelectItem>
-                    <SelectItem value="price-low">Price: Low to High</SelectItem>
-                    <SelectItem value="price-high">Price: High to Low</SelectItem>
-                    <SelectItem value="rating">Rating</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-      </div>
-
-      {/* Products Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {filteredProducts.map((product) => (
-          <Card key={product.id} className="overflow-hidden hover:shadow-lg transition-shadow">
-            <div className="aspect-video bg-muted relative overflow-hidden">
-              {product.discountPrice && (
-                <Badge className="absolute top-3 left-3 z-10 bg-destructive">
-                  Save ${product.price - product.discountPrice}
-                </Badge>
-              )}
-              <div className="w-full h-full bg-gradient-to-br from-muted to-muted-foreground/20 flex items-center justify-center">
-                <span className="text-muted-foreground text-sm">Product Image</span>
-              </div>
-            </div>
-            
+      <div className="flex flex-col lg:flex-row gap-8">
+        {/* Desktop Filters */}
+        <aside className="hidden lg:block w-64 shrink-0">
+          <Card className="card-gradient border-0">
             <CardContent className="p-6">
-              <div className="flex items-center justify-between mb-2">
-                <Badge variant="outline" className="text-xs">
-                  {product.brand}
-                </Badge>
-                {product.rating && (
-                  <div className="flex items-center space-x-1">
-                    <Star className="h-4 w-4 fill-yellow-400 text-yellow-400" />
-                    <span className="text-sm text-muted-foreground">
-                      {product.rating} ({product.reviewCount})
-                    </span>
-                  </div>
-                )}
-              </div>
-              
-              <h3 className="font-semibold text-lg mb-2">
-                {product.name}
-              </h3>
-              
-              <p className="text-sm text-gray-600 mb-4 line-clamp-2">
-                {product.description}
-              </p>
-              
-              <div className="flex items-center justify-between mb-4">
-                <div className="flex items-center space-x-2">
-                  {product.discountPrice ? (
-                    <>
-                      <span className="text-2xl font-bold text-primary">
-                        ${product.discountPrice}
-                      </span>
-                      <span className="text-sm text-muted-foreground line-through">
-                        ${product.price}
-                      </span>
-                    </>
-                  ) : (
-                    <span className="text-2xl font-bold">
-                      ${product.price}
-                    </span>
-                  )}
-                </div>
-                <div className="text-sm text-gray-600">
-                  Stock: {product.stock}
-                </div>
-              </div>
-              
-              <div className="flex space-x-2">
-                <Button variant="outline" size="sm" asChild className="flex-1">
-                  <Link to={`/products/${product.id}`}>
-                    View Details
-                  </Link>
-                </Button>
-                <Button 
-                  size="sm" 
-                  className="flex-1"
-                  onClick={() => handleAddToCart(product)}
-                  disabled={product.stock === 0}
-                >
-                  <ShoppingCart className="h-4 w-4 mr-2" />
-                  Add to Cart
-                </Button>
-              </div>
+              <h2 className="font-semibold mb-4">Filters</h2>
+              <FilterContent />
             </CardContent>
           </Card>
-        ))}
-      </div>
+        </aside>
 
-      {filteredProducts.length === 0 && (
-        <div className="text-center py-12">
-          <p className="text-gray-600">No products found matching your criteria.</p>
+        {/* Main Content */}
+        <div className="flex-1">
+          {/* Toolbar */}
+          <div className="flex items-center justify-between mb-6">
+            <div className="flex items-center space-x-4">
+              {/* Mobile Filter */}
+              <Sheet>
+                <SheetTrigger asChild>
+                  <Button variant="outline" size="sm" className="lg:hidden">
+                    <Filter className="h-4 w-4 mr-2" />
+                    Filters
+                  </Button>
+                </SheetTrigger>
+                <SheetContent side="left" className="w-80">
+                  <SheetHeader>
+                    <SheetTitle>Filters</SheetTitle>
+                  </SheetHeader>
+                  <div className="mt-6">
+                    <FilterContent />
+                  </div>
+                </SheetContent>
+              </Sheet>
+
+              {/* Sort */}
+              <Select value={sortBy} onValueChange={handleSortChange}>
+                <SelectTrigger className="w-40">
+                  <SelectValue placeholder="Sort by" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="popularity">Popularity</SelectItem>
+                  <SelectItem value="price-low">Price: Low to High</SelectItem>
+                  <SelectItem value="price-high">Price: High to Low</SelectItem>
+                  <SelectItem value="rating">Rating</SelectItem>
+                  <SelectItem value="newest">Newest</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+
+            {/* View Mode */}
+            <div className="flex items-center space-x-2">
+              <Button
+                variant={viewMode === "grid" ? "default" : "outline"}
+                size="sm"
+                onClick={() => setViewMode("grid")}
+              >
+                <Grid className="h-4 w-4" />
+              </Button>
+              <Button
+                variant={viewMode === "list" ? "default" : "outline"}
+                size="sm"
+                onClick={() => setViewMode("list")}
+              >
+                <List className="h-4 w-4" />
+              </Button>
+            </div>
+          </div>
+
+          {/* Products Grid */}
+          <div
+            className={`grid gap-6 ${
+              viewMode === "grid"
+                ? "grid-cols-1 md:grid-cols-2 xl:grid-cols-3"
+                : "grid-cols-1"
+            }`}
+          >
+            {filteredProducts.map((product, index) => (
+              <Card
+                key={product.productId}
+                className="card-gradient border-0 overflow-hidden group hover:shadow-lg transition-all duration-300 slide-up"
+                style={{ animationDelay: `${index * 0.05}s` }}
+              >
+                <div className={`${viewMode === "list" ? "flex" : ""}`}>
+                  <div
+                    className={`${
+                      viewMode === "list" ? "w-64" : "aspect-video"
+                    } bg-muted relative overflow-hidden`}
+                  >
+                    <div className="w-full h-full bg-gradient-to-br from-muted to-muted-foreground/20 flex items-center justify-center">
+                      <span className="text-muted-foreground text-sm">
+                        Product Image
+                      </span>
+                    </div>
+                  </div>
+
+                  <CardContent
+                    className={`p-6 ${viewMode === "list" ? "flex-1" : ""}`}
+                  >
+                    <div className="flex items-center justify-between mb-2">
+                      <Badge variant="outline" className="text-xs">
+                        {product.brand}
+                      </Badge>
+                      {product.category && (
+                        <Badge variant="secondary" className="text-xs">
+                          {product.category.categoryName}
+                        </Badge>
+                      )}
+                    </div>
+
+                    <h3 className="font-semibold text-lg mb-3 group-hover:text-primary transition-colors">
+                      <Link to={`/products/${product.productId}`}>
+                        {product.name}
+                      </Link>
+                    </h3>
+
+                    {product.description && (
+                      <p className="text-sm text-muted-foreground mb-3 line-clamp-2">
+                        {product.description}
+                      </p>
+                    )}
+
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center space-x-2">
+                        <span className="text-2xl font-bold">
+                          ${product.price}
+                        </span>
+                      </div>
+
+                      <div className="flex items-center space-x-2">
+                        <Button
+                          size="sm"
+                          onClick={() => addItem(product as any)}
+                          disabled={product.quantity === 0}
+                        >
+                          <ShoppingCart className="h-4 w-4 mr-2" />
+                          {product.quantity === 0
+                            ? "Out of Stock"
+                            : "Add to Cart"}
+                        </Button>
+                      </div>
+                    </div>
+
+                    {product.quantity <= 5 && product.quantity > 0 && (
+                      <p className="text-warning text-sm mt-2">
+                        Only {product.quantity} left in stock!
+                      </p>
+                    )}
+                  </CardContent>
+                </div>
+              </Card>
+            ))}
+          </div>
+
+          {filteredProducts.length === 0 && (
+            <div className="text-center py-12">
+              <p className="text-muted-foreground text-lg">
+                No products found matching your criteria.
+              </p>
+              <Button
+                variant="outline"
+                className="mt-4"
+                onClick={() => {
+                  setSelectedBrands([]);
+                  setSelectedCategories([]);
+                  setPriceRange([0, 300000]);
+                  setSearchParams({});
+                }}
+              >
+                Clear Filters
+              </Button>
+            </div>
+          )}
         </div>
-      )}
+      </div>
     </div>
   );
 };

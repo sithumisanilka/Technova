@@ -1,331 +1,384 @@
-import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { useForm } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { z } from 'zod';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Textarea } from '@/components/ui/textarea';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { useAuth } from '@/context/AuthContext';
-import { useCart } from '@/context/CartContext';
-import { orderApi } from '@/services/api';
-import { CheckoutRequest, PaymentMethod } from '@/types/order';
-import { ArrowLeft, CreditCard, MapPin, Package, CheckCircle } from 'lucide-react';
-import { toast } from '@/hooks/use-toast';
+import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { useCart } from "@/context/CartContext";
+import { orderService } from "@/services/orderService";
+import { cartService } from "@/services/cartService";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Separator } from "@/components/ui/separator";
+import { Badge } from "@/components/ui/badge";
+import { toast } from "@/hooks/use-toast";
+import { ShoppingCart, CreditCard, Truck, CheckCircle } from "lucide-react";
 
-const checkoutSchema = z.object({
-  shippingName: z.string().min(2, 'Name must be at least 2 characters'),
-  shippingAddress: z.string().min(10, 'Address must be at least 10 characters'),
-  shippingCity: z.string().min(2, 'City is required'),
-  shippingPostalCode: z.string().min(5, 'Postal code must be at least 5 characters'),
-  shippingPhone: z.string().min(10, 'Phone number must be at least 10 characters'),
-  paymentMethod: z.nativeEnum(PaymentMethod, {
-    errorMap: () => ({ message: 'Please select a payment method' })
-  }),
-  notes: z.string().optional()
-});
+interface CheckoutFormData {
+  shippingName: string;
+  shippingAddress: string;
+  shippingCity: string;
+  shippingPostalCode: string;
+  shippingPhone: string;
+  paymentMethod: string;
+  notes: string;
+}
 
-type CheckoutFormData = z.infer<typeof checkoutSchema>;
-
-export const Checkout: React.FC = () => {
-  const { user, isAuthenticated } = useAuth();
-  const { cart, getCartTotal, clearCart } = useCart();
+const Checkout = () => {
   const navigate = useNavigate();
-  const [isSubmitting, setIsSubmitting] = useState(false);
-
-  const {
-    register,
-    handleSubmit,
-    setValue,
-    watch,
-    formState: { errors }
-  } = useForm<CheckoutFormData>({
-    resolver: zodResolver(checkoutSchema),
-    defaultValues: {
-      shippingName: user?.firstName && user?.lastName ? `${user.firstName} ${user.lastName}` : '',
-      shippingAddress: user?.address || '',
-      shippingCity: user?.city || '',
-      shippingPostalCode: user?.postalCode || '',
-      shippingPhone: user?.phone || '',
-      paymentMethod: PaymentMethod.CASH,
-      notes: ''
-    }
+  const { items, total, clearCart } = useCart();
+  const [loading, setLoading] = useState(false);
+  const [formData, setFormData] = useState<CheckoutFormData>({
+    shippingName: "",
+    shippingAddress: "",
+    shippingCity: "",
+    shippingPostalCode: "",
+    shippingPhone: "",
+    paymentMethod: "",
+    notes: "",
   });
 
-  const selectedPaymentMethod = watch('paymentMethod');
+  // Calculate totals
+  const subtotal = total;
+  const tax = subtotal * 0.1; // 10% tax
+  const shippingCost = subtotal > 100000 ? 0 : 2000; // Free shipping over 100k
+  const totalAmount = subtotal + tax + shippingCost;
 
-  useEffect(() => {
-    if (!isAuthenticated) {
-      navigate('/login');
+  const handleInputChange = (field: keyof CheckoutFormData, value: string) => {
+    setFormData((prev) => ({
+      ...prev,
+      [field]: value,
+    }));
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+
+    if (items.length === 0) {
+      toast({
+        title: "Cart is Empty",
+        description: "Please add items to your cart before checkout.",
+        variant: "destructive",
+      });
       return;
     }
 
-    if (!cart || cart.items.length === 0) {
-      navigate('/cart');
+    // Validate required fields
+    const requiredFields = [
+      "shippingName",
+      "shippingAddress",
+      "shippingCity",
+      "shippingPostalCode",
+      "shippingPhone",
+      "paymentMethod",
+    ];
+    const missingFields = requiredFields.filter(
+      (field) => !formData[field as keyof CheckoutFormData]
+    );
+
+    if (missingFields.length > 0) {
+      toast({
+        title: "Missing Information",
+        description: "Please fill in all required fields.",
+        variant: "destructive",
+      });
       return;
     }
-  }, [isAuthenticated, cart, navigate]);
 
-  const onSubmit = async (data: CheckoutFormData) => {
-    if (!user || !cart) return;
+    setLoading(true);
 
     try {
-      setIsSubmitting(true);
+      // For now, using a dummy customer ID. In a real app, this would come from authentication
+      const customerId = 1; // This should come from auth context
 
-      const checkoutRequest: CheckoutRequest = {
-        customerId: user.id,
-        shippingName: data.shippingName,
-        shippingAddress: data.shippingAddress,
-        shippingCity: data.shippingCity,
-        shippingPostalCode: data.shippingPostalCode,
-        shippingPhone: data.shippingPhone,
-        paymentMethod: data.paymentMethod,
-        notes: data.notes || undefined
+      // First, sync the local cart to the backend cart
+      // Clear the backend cart first
+      try {
+        await cartService.clearCart(customerId);
+      } catch (error) {
+        // Backend cart was already empty or doesn't exist
+      }
+
+      // Add each item from local cart to backend cart
+      for (const item of items) {
+        await cartService.addItemToCart(
+          customerId,
+          item.product.productId,
+          item.quantity,
+          item.price
+        );
+      }
+
+      // Now proceed with checkout
+      const checkoutData = {
+        customerId: customerId,
+        shippingName: formData.shippingName,
+        shippingAddress: formData.shippingAddress,
+        shippingCity: formData.shippingCity,
+        shippingPostalCode: formData.shippingPostalCode,
+        shippingPhone: formData.shippingPhone,
+        paymentMethod: formData.paymentMethod,
+        notes: formData.notes,
       };
 
-      const order = await orderApi.checkout(checkoutRequest);
-      
-      // Clear cart after successful checkout
-      await clearCart();
-      
+      const order = await orderService.checkout(checkoutData);
+
       toast({
         title: "Order Placed Successfully!",
-        description: `Your order #${order.orderNumber} has been placed and is being processed.`,
+        description: `Your order #${order.orderNumber} has been placed.`,
       });
 
-      navigate(`/orders/${order.id}`);
+      // Clear cart and redirect to products page
+      clearCart();
+      navigate("/products");
     } catch (error) {
-      console.error('Checkout error:', error);
+      console.error("Checkout error:", error);
       toast({
         title: "Checkout Failed",
-        description: "There was an error processing your order. Please try again.",
-        variant: "destructive"
+        description:
+          "There was an error processing your order. Please try again.",
+        variant: "destructive",
       });
     } finally {
-      setIsSubmitting(false);
+      setLoading(false);
     }
   };
 
-  if (!cart || cart.items.length === 0) {
-    return null;
+  if (items.length === 0) {
+    return (
+      <div className="container mx-auto px-4 py-8">
+        <div className="text-center py-12">
+          <ShoppingCart className="h-16 w-16 mx-auto text-muted-foreground mb-4" />
+          <h1 className="text-2xl font-bold mb-4">Your Cart is Empty</h1>
+          <p className="text-muted-foreground mb-6">
+            Add some products to your cart before proceeding to checkout.
+          </p>
+          <Button onClick={() => navigate("/products")}>
+            Continue Shopping
+          </Button>
+        </div>
+      </div>
+    );
   }
-
-  const cartTotal = getCartTotal();
 
   return (
     <div className="container mx-auto px-4 py-8">
-      {/* Header */}
-      <div className="mb-8">
-        <Button variant="ghost" asChild className="mb-4">
-          <a href="/cart">
-            <ArrowLeft className="h-4 w-4 mr-2" />
-            Back to Cart
-          </a>
-        </Button>
-        
-        <h1 className="text-3xl font-bold mb-2">Checkout</h1>
-        <p className="text-gray-600">Complete your laptop order</p>
-      </div>
+      <div className="max-w-6xl mx-auto">
+        <h1 className="text-3xl font-bold mb-8">Checkout</h1>
 
-      <form onSubmit={handleSubmit(onSubmit)} className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-        {/* Checkout Form */}
-        <div className="lg:col-span-2 space-y-6">
-          {/* Shipping Information */}
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center space-x-2">
-                <MapPin className="h-5 w-5" />
-                <span>Shipping Information</span>
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div>
-                <Label htmlFor="shippingName">Full Name *</Label>
-                <Input
-                  id="shippingName"
-                  {...register('shippingName')}
-                  className={errors.shippingName ? 'border-red-500' : ''}
-                />
-                {errors.shippingName && (
-                  <p className="text-red-500 text-sm mt-1">{errors.shippingName.message}</p>
-                )}
-              </div>
-
-              <div>
-                <Label htmlFor="shippingAddress">Address *</Label>
-                <Input
-                  id="shippingAddress"
-                  {...register('shippingAddress')}
-                  className={errors.shippingAddress ? 'border-red-500' : ''}
-                  placeholder="Street address, building, apartment"
-                />
-                {errors.shippingAddress && (
-                  <p className="text-red-500 text-sm mt-1">{errors.shippingAddress.message}</p>
-                )}
-              </div>
-
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <form
+          onSubmit={handleSubmit}
+          className="grid grid-cols-1 lg:grid-cols-2 gap-8"
+        >
+          {/* Left Column - Shipping & Payment Info */}
+          <div className="space-y-6">
+            {/* Shipping Information */}
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <Truck className="h-5 w-5" />
+                  Shipping Information
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-4">
                 <div>
-                  <Label htmlFor="shippingCity">City *</Label>
+                  <Label htmlFor="shippingName">Full Name *</Label>
                   <Input
-                    id="shippingCity"
-                    {...register('shippingCity')}
-                    className={errors.shippingCity ? 'border-red-500' : ''}
+                    id="shippingName"
+                    value={formData.shippingName}
+                    onChange={(e) =>
+                      handleInputChange("shippingName", e.target.value)
+                    }
+                    placeholder="Enter your full name"
+                    required
                   />
-                  {errors.shippingCity && (
-                    <p className="text-red-500 text-sm mt-1">{errors.shippingCity.message}</p>
-                  )}
                 </div>
 
                 <div>
-                  <Label htmlFor="shippingPostalCode">Postal Code *</Label>
-                  <Input
-                    id="shippingPostalCode"
-                    {...register('shippingPostalCode')}
-                    className={errors.shippingPostalCode ? 'border-red-500' : ''}
+                  <Label htmlFor="shippingAddress">Address *</Label>
+                  <Textarea
+                    id="shippingAddress"
+                    value={formData.shippingAddress}
+                    onChange={(e) =>
+                      handleInputChange("shippingAddress", e.target.value)
+                    }
+                    placeholder="Enter your complete address"
+                    required
                   />
-                  {errors.shippingPostalCode && (
-                    <p className="text-red-500 text-sm mt-1">{errors.shippingPostalCode.message}</p>
-                  )}
                 </div>
-              </div>
 
-              <div>
-                <Label htmlFor="shippingPhone">Phone Number *</Label>
-                <Input
-                  id="shippingPhone"
-                  {...register('shippingPhone')}
-                  className={errors.shippingPhone ? 'border-red-500' : ''}
-                  placeholder="+94 77 123 4567"
-                />
-                {errors.shippingPhone && (
-                  <p className="text-red-500 text-sm mt-1">{errors.shippingPhone.message}</p>
-                )}
-              </div>
-            </CardContent>
-          </Card>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <Label htmlFor="shippingCity">City *</Label>
+                    <Input
+                      id="shippingCity"
+                      value={formData.shippingCity}
+                      onChange={(e) =>
+                        handleInputChange("shippingCity", e.target.value)
+                      }
+                      placeholder="Enter city"
+                      required
+                    />
+                  </div>
 
-          {/* Payment Method */}
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center space-x-2">
-                <CreditCard className="h-5 w-5" />
-                <span>Payment Method</span>
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-4">
+                  <div>
+                    <Label htmlFor="shippingPostalCode">Postal Code *</Label>
+                    <Input
+                      id="shippingPostalCode"
+                      value={formData.shippingPostalCode}
+                      onChange={(e) =>
+                        handleInputChange("shippingPostalCode", e.target.value)
+                      }
+                      placeholder="Enter postal code"
+                      required
+                    />
+                  </div>
+                </div>
+
                 <div>
-                  <Label htmlFor="paymentMethod">Select Payment Method *</Label>
+                  <Label htmlFor="shippingPhone">Phone Number *</Label>
+                  <Input
+                    id="shippingPhone"
+                    value={formData.shippingPhone}
+                    onChange={(e) =>
+                      handleInputChange("shippingPhone", e.target.value)
+                    }
+                    placeholder="Enter your phone number"
+                    required
+                  />
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* Payment Information */}
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <CreditCard className="h-5 w-5" />
+                  Payment Method
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div>
+                  <Label htmlFor="paymentMethod">Payment Method *</Label>
                   <Select
-                    value={selectedPaymentMethod}
-                    onValueChange={(value) => setValue('paymentMethod', value as PaymentMethod)}
+                    value={formData.paymentMethod}
+                    onValueChange={(value) =>
+                      handleInputChange("paymentMethod", value)
+                    }
                   >
-                    <SelectTrigger className={errors.paymentMethod ? 'border-red-500' : ''}>
-                      <SelectValue placeholder="Choose payment method" />
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select payment method" />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value={PaymentMethod.CASH}>Cash on Delivery</SelectItem>
-                      <SelectItem value={PaymentMethod.CREDIT_CARD}>Credit Card</SelectItem>
-                      <SelectItem value={PaymentMethod.DEBIT_CARD}>Debit Card</SelectItem>
-                      <SelectItem value={PaymentMethod.BANK_TRANSFER}>Bank Transfer</SelectItem>
-                      <SelectItem value={PaymentMethod.DIGITAL_WALLET}>Digital Wallet</SelectItem>
+                      <SelectItem value="CREDIT_CARD">Credit Card</SelectItem>
+                      <SelectItem value="DEBIT_CARD">Debit Card</SelectItem>
+                      <SelectItem value="BANK_TRANSFER">
+                        Bank Transfer
+                      </SelectItem>
+                      <SelectItem value="CASH_ON_DELIVERY">
+                        Cash on Delivery
+                      </SelectItem>
+                      <SelectItem value="DIGITAL_WALLET">
+                        Digital Wallet
+                      </SelectItem>
                     </SelectContent>
                   </Select>
-                  {errors.paymentMethod && (
-                    <p className="text-red-500 text-sm mt-1">{errors.paymentMethod.message}</p>
-                  )}
                 </div>
 
-                {selectedPaymentMethod === PaymentMethod.CASH && (
-                  <div className="bg-blue-50 p-4 rounded-lg">
-                    <p className="text-blue-800 text-sm">
-                      <strong>Cash on Delivery:</strong> Pay with cash when your order is delivered.
-                    </p>
-                  </div>
-                )}
+                <div>
+                  <Label htmlFor="notes">Order Notes (Optional)</Label>
+                  <Textarea
+                    id="notes"
+                    value={formData.notes}
+                    onChange={(e) => handleInputChange("notes", e.target.value)}
+                    placeholder="Any special instructions for your order..."
+                    rows={3}
+                  />
+                </div>
+              </CardContent>
+            </Card>
+          </div>
 
-                {selectedPaymentMethod === PaymentMethod.BANK_TRANSFER && (
-                  <div className="bg-green-50 p-4 rounded-lg">
-                    <p className="text-green-800 text-sm">
-                      <strong>Bank Transfer:</strong> Transfer the amount to our account and include your order number in the reference.
-                    </p>
-                  </div>
-                )}
-              </div>
-            </CardContent>
-          </Card>
-
-          {/* Order Notes */}
-          <Card>
-            <CardHeader>
-              <CardTitle>Order Notes (Optional)</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <Textarea
-                {...register('notes')}
-                placeholder="Any special instructions or notes for your order..."
-                rows={3}
-              />
-            </CardContent>
-          </Card>
-        </div>
-
-        {/* Order Summary */}
-        <div className="space-y-6">
-          <Card className="sticky top-8">
-            <CardHeader>
-              <CardTitle className="flex items-center space-x-2">
-                <Package className="h-5 w-5" />
-                <span>Order Summary</span>
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-4">
+          {/* Right Column - Order Summary */}
+          <div className="space-y-6">
+            <Card>
+              <CardHeader>
+                <CardTitle>Order Summary</CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-4">
                 {/* Order Items */}
                 <div className="space-y-3">
-                  {cart.items.map((item) => (
-                    <div key={item.id} className="flex justify-between items-center">
-                      <div className="flex-1">
-                        <p className="font-medium text-sm">{item.productName}</p>
-                        <p className="text-xs text-gray-600">Qty: {item.quantity}</p>
+                  {items.map((item) => (
+                    <div
+                      key={item.id}
+                      className="flex items-center justify-between"
+                    >
+                      <div className="flex items-center gap-3">
+                        <div className="w-12 h-12 bg-muted rounded-md flex items-center justify-center">
+                          <span className="text-xs text-muted-foreground">
+                            IMG
+                          </span>
+                        </div>
+                        <div>
+                          <p className="font-medium text-sm">
+                            {item.product.name}
+                          </p>
+                          <p className="text-xs text-muted-foreground">
+                            {item.product.brand} • Qty: {item.quantity}
+                          </p>
+                        </div>
                       </div>
-                      <p className="font-medium">${item.totalPrice.toFixed(2)}</p>
+                      <p className="font-medium">
+                        ${(item.price * item.quantity).toLocaleString()}
+                      </p>
                     </div>
                   ))}
                 </div>
 
-                <div className="border-t pt-4 space-y-2">
+                <Separator />
+
+                {/* Price Breakdown */}
+                <div className="space-y-2">
                   <div className="flex justify-between">
                     <span>Subtotal</span>
-                    <span>${cart.subtotal.toFixed(2)}</span>
+                    <span>${subtotal.toLocaleString()}</span>
                   </div>
                   <div className="flex justify-between">
-                    <span>Tax</span>
-                    <span>${cart.tax.toFixed(2)}</span>
+                    <span>Tax (10%)</span>
+                    <span>${tax.toLocaleString()}</span>
                   </div>
                   <div className="flex justify-between">
                     <span>Shipping</span>
-                    <span>${cart.shippingCost.toFixed(2)}</span>
+                    <span>
+                      {shippingCost === 0 ? (
+                        <Badge variant="secondary">FREE</Badge>
+                      ) : (
+                        `$${shippingCost.toLocaleString()}`
+                      )}
+                    </span>
                   </div>
-                  <div className="border-t pt-2">
-                    <div className="flex justify-between font-bold text-lg">
-                      <span>Total</span>
-                      <span>${cartTotal.toFixed(2)}</span>
-                    </div>
+                  <Separator />
+                  <div className="flex justify-between text-lg font-bold">
+                    <span>Total</span>
+                    <span>${totalAmount.toLocaleString()}</span>
                   </div>
                 </div>
 
+                {/* Place Order Button */}
                 <Button
                   type="submit"
                   className="w-full"
                   size="lg"
-                  disabled={isSubmitting}
+                  disabled={loading}
                 >
-                  {isSubmitting ? (
+                  {loading ? (
                     <>
                       <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
                       Processing...
@@ -338,14 +391,17 @@ export const Checkout: React.FC = () => {
                   )}
                 </Button>
 
-                <p className="text-xs text-gray-600 text-center">
-                  By placing this order, you agree to our terms and conditions.
-                </p>
-              </div>
-            </CardContent>
-          </Card>
-        </div>
-      </form>
+                {/* Security Notice */}
+                <div className="text-xs text-muted-foreground text-center">
+                  <p>🔒 Your payment information is secure and encrypted</p>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+        </form>
+      </div>
     </div>
   );
 };
+
+export default Checkout;

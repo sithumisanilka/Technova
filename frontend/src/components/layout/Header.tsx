@@ -1,155 +1,152 @@
-import React from 'react';
-import { Link, useNavigate } from 'react-router-dom';
-import { ShoppingCart, User, LogOut, Menu, X } from 'lucide-react';
-import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
-import { useAuth } from '@/context/AuthContext';
-import { useCart } from '@/context/CartContext';
-import { useState } from 'react';
+import { useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import { ShoppingCart, Search, Menu, X, Laptop } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Badge } from "@/components/ui/badge";
+import { useCart } from "@/context/CartContext";
 
-export const Header: React.FC = () => {
-  const { user, isAuthenticated, logout } = useAuth();
-  const { getCartItemCount } = useCart();
-  const navigate = useNavigate();
+export const Header = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [searchQuery, setSearchQuery] = useState("");
+  const { itemCount } = useCart();
+  const navigate = useNavigate();
 
-  const handleLogout = () => {
-    logout();
-    navigate('/');
+  const handleSearch = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (searchQuery.trim()) {
+      navigate(`/products?search=${encodeURIComponent(searchQuery.trim())}`);
+      setSearchQuery("");
+    }
   };
 
-  const cartItemCount = getCartItemCount();
-
   return (
-    <header className="bg-white shadow-sm border-b sticky top-0 z-50">
+    <header className="sticky top-0 z-50 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 border-b">
       <div className="container mx-auto px-4">
-        <div className="flex items-center justify-between h-16">
+        <div className="flex h-16 items-center justify-between">
           {/* Logo */}
-          <Link to="/" className="flex items-center space-x-2">
-            <div className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center">
-              <span className="text-white font-bold text-lg">S</span>
-            </div>
-            <span className="text-xl font-bold text-primary">SOLEKTA</span>
-          </Link>
+          <span className="text-xl font-bold bg-gradient-primary bg-clip-text text-transparent">
+            Technova
+          </span>
 
           {/* Desktop Navigation */}
           <nav className="hidden md:flex items-center space-x-8">
-            <Link to="/" className="text-gray-700 hover:text-primary transition-colors">
-              Home
-            </Link>
-            <Link to="/products" className="text-gray-700 hover:text-primary transition-colors">
+            <Link
+              to="/"
+              className="text-foreground hover:text-primary transition-colors"
+            >
               Products
             </Link>
-            <Link to="/repair-booking" className="text-gray-700 hover:text-primary transition-colors">
-              Repair Service
-            </Link>
-            {isAuthenticated && (
-              <Link to="/orders" className="text-gray-700 hover:text-primary transition-colors">
-                My Orders
-              </Link>
-            )}
+            {/* <Link
+              to="/cart"
+              className="text-foreground hover:text-primary transition-colors"
+            >
+              Cart
+            </Link> 
+            <Link
+              to="/orders"
+              className="text-foreground hover:text-primary transition-colors"
+            >
+              Orders
+            </Link>*/}
           </nav>
 
-          {/* Right side actions */}
-          <div className="flex items-center space-x-4">
+          {/* Search Bar */}
+          {/* <form
+            onSubmit={handleSearch}
+            className="hidden md:block flex-1 max-w-md mx-8"
+          >
+            <div className="relative">
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+              <Input
+                type="search"
+                placeholder="Search laptops..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="pl-10 pr-4"
+              />
+            </div>
+          </form> */}
+
+          {/* Desktop Actions */}
+          <div className="hidden md:flex items-center space-x-4">
             {/* Cart */}
-            <Link to="/cart" className="relative p-2 text-gray-700 hover:text-primary transition-colors">
-              <ShoppingCart className="h-6 w-6" />
-              {cartItemCount > 0 && (
-                <Badge 
-                  variant="destructive" 
-                  className="absolute -top-1 -right-1 h-5 w-5 flex items-center justify-center p-0 text-xs"
-                >
-                  {cartItemCount}
-                </Badge>
-              )}
+            <Link to="/cart" className="relative">
+              <Button variant="ghost" size="icon">
+                <ShoppingCart className="h-5 w-5" />
+                {itemCount > 0 && (
+                  <Badge
+                    variant="destructive"
+                    className="absolute -top-2 -right-2 h-5 w-5 flex items-center justify-center p-0 text-xs"
+                  >
+                    {itemCount}
+                  </Badge>
+                )}
+              </Button>
             </Link>
-
-            {/* User Menu */}
-            {isAuthenticated ? (
-              <div className="flex items-center space-x-2">
-                <Link to="/profile" className="p-2 text-gray-700 hover:text-primary transition-colors">
-                  <User className="h-6 w-6" />
-                </Link>
-                <Button variant="ghost" size="sm" onClick={handleLogout}>
-                  <LogOut className="h-4 w-4" />
-                </Button>
-              </div>
-            ) : (
-              <div className="flex items-center space-x-2">
-                <Button variant="ghost" asChild>
-                  <Link to="/login">Login</Link>
-                </Button>
-                <Button asChild>
-                  <Link to="/register">Register</Link>
-                </Button>
-              </div>
-            )}
-
-            {/* Mobile menu button */}
-            <Button
-              variant="ghost"
-              size="sm"
-              className="md:hidden"
-              onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-            >
-              {isMobileMenuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
-            </Button>
           </div>
+
+          {/* Mobile Menu Button */}
+          <Button
+            variant="ghost"
+            size="icon"
+            className="md:hidden"
+            onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+          >
+            {isMobileMenuOpen ? (
+              <X className="h-5 w-5" />
+            ) : (
+              <Menu className="h-5 w-5" />
+            )}
+          </Button>
         </div>
 
-        {/* Mobile Navigation */}
+        {/* Mobile Menu */}
         {isMobileMenuOpen && (
-          <div className="md:hidden border-t py-4">
-            <nav className="flex flex-col space-y-4">
-              <Link 
-                to="/" 
-                className="text-gray-700 hover:text-primary transition-colors"
-                onClick={() => setIsMobileMenuOpen(false)}
-              >
-                Home
-              </Link>
-              <Link 
-                to="/products" 
-                className="text-gray-700 hover:text-primary transition-colors"
+          <div className="md:hidden border-t bg-background py-4">
+            {/* Mobile Search */}
+            <form onSubmit={handleSearch} className="px-4 mb-4">
+              <div className="relative">
+                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                <Input
+                  type="search"
+                  placeholder="Search laptops..."
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  className="pl-10 pr-4"
+                />
+              </div>
+            </form>
+
+            {/* Mobile Navigation */}
+            <nav className="flex flex-col space-y-4 px-4">
+              <Link
+                to="/"
+                className="text-foreground hover:text-primary transition-colors"
                 onClick={() => setIsMobileMenuOpen(false)}
               >
                 Products
               </Link>
-              <Link 
-                to="/repair-booking" 
-                className="text-gray-700 hover:text-primary transition-colors"
+              <Link
+                to="/cart"
+                className="flex items-center space-x-2 text-foreground hover:text-primary transition-colors"
                 onClick={() => setIsMobileMenuOpen(false)}
               >
-                Repair Service
+                <ShoppingCart className="h-4 w-4" />
+                <span>Cart</span>
+                {itemCount > 0 && (
+                  <Badge variant="destructive" className="text-xs">
+                    {itemCount}
+                  </Badge>
+                )}
               </Link>
-              {isAuthenticated && (
-                <>
-                  <Link 
-                    to="/orders" 
-                    className="text-gray-700 hover:text-primary transition-colors"
-                    onClick={() => setIsMobileMenuOpen(false)}
-                  >
-                    My Orders
-                  </Link>
-                  <Link 
-                    to="/profile" 
-                    className="text-gray-700 hover:text-primary transition-colors"
-                    onClick={() => setIsMobileMenuOpen(false)}
-                  >
-                    Profile
-                  </Link>
-                  <button 
-                    onClick={() => {
-                      handleLogout();
-                      setIsMobileMenuOpen(false);
-                    }}
-                    className="text-left text-gray-700 hover:text-primary transition-colors"
-                  >
-                    Logout
-                  </button>
-                </>
-              )}
+              <Link
+                to="/orders"
+                className="text-foreground hover:text-primary transition-colors"
+                onClick={() => setIsMobileMenuOpen(false)}
+              >
+                Orders
+              </Link>
             </nav>
           </div>
         )}
