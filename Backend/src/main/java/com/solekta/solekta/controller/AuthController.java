@@ -9,7 +9,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/api/users")
+@RequestMapping("/api/auth")  // changed base URL to /api/auth
 public class AuthController {
 
     private final UserRepository userRepository;
@@ -27,19 +27,24 @@ public class AuthController {
         this.jwtUtil = jwtUtil;
     }
 
-    @PostMapping("/register")
+    // User registration
+    @PostMapping("/register")  // full URL: /api/auth/register
     public String register(@RequestBody User user) {
         user.setPassword(passwordEncoder.encode(user.getPassword()));
         userRepository.save(user);
         return "User registered successfully!";
     }
 
-    @PostMapping("/login")
+    // User login
+    @PostMapping("/login")     // full URL: /api/auth/login
     public String login(@RequestBody User user) {
         authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(user.getUsername(), user.getPassword()));
+                new UsernamePasswordAuthenticationToken(user.getUsername(), user.getPassword())
+        );
 
         return jwtUtil.generateToken(user.getUsername());
     }
 }
+
+
 
