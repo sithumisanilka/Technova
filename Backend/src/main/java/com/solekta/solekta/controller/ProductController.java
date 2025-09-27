@@ -1,5 +1,6 @@
 package com.solekta.solekta.controller;
 
+import com.solekta.solekta.model.Product;
 import com.solekta.solekta.service.ProductService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -10,6 +11,7 @@ import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/products")
+@CrossOrigin(origins = "*")
 public class ProductController {
 
     @Autowired
