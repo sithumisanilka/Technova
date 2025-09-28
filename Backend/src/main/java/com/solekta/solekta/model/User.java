@@ -1,7 +1,7 @@
 package com.solekta.solekta.model;
 
-import jakarta.persistence.*;   // if using Spring Boot 3.x (Jakarta EE)
-import lombok.*;              // optional, if you use Lombok
+import jakarta.persistence.*;
+import lombok.*;
 
 @Entity
 @Table(name = "users")
@@ -25,6 +25,8 @@ public class User {
     @Column(nullable = false, unique = true)
     private String email;
 
-    private String role;  // e.g., ADMIN, USER
+    @Column(nullable = false)
+    private String role = "USER";  // default role
 }
+
 
