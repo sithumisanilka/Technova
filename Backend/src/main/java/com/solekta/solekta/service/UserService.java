@@ -3,6 +3,8 @@ package com.solekta.solekta.service;
 import com.solekta.solekta.model.User;
 import com.solekta.solekta.repository.UserRepository;
 import org.springframework.stereotype.Service;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
+
 
 import java.util.List;
 import java.util.Optional;
@@ -31,5 +33,10 @@ public class UserService {
     public void deleteUser(Long id) {
         userRepository.deleteById(id);
     }
+    public User findByUsername(String username) {
+        return userRepository.findByUsername(username)
+                .orElseThrow(() -> new UsernameNotFoundException("User not found"));
+    }
+
 }
 
