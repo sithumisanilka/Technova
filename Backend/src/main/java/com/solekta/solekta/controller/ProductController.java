@@ -31,7 +31,7 @@ public class ProductController {
     }
 
     // Create a new product
-    @PostMapping
+    @PostMapping("/register")
     public Product createProduct(@RequestBody Product product) {
         return productService.saveProduct(product);
     }
