@@ -1,19 +1,22 @@
 package com.solekta.solekta.service;
 
+import com.solekta.solekta.dto.ProductRequest;
 import com.solekta.solekta.dto.ProductResponse;
+import com.solekta.solekta.model.Category;
 import com.solekta.solekta.model.Product;
 import com.solekta.solekta.repository.ProductRepository;
+import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
 
-@Service
+@Service @AllArgsConstructor
 public class ProductService {
 
-    @Autowired
     private ProductRepository productRepository;
+    private final CategoryService categoryService;
 
     public List<ProductResponse> getAllProducts() {
         return productRepository.findAll()
@@ -26,11 +29,20 @@ public class ProductService {
         return productRepository.findById(id);
     }
 
-    public Product saveProduct(Product product) {
+    public Product saveProduct(ProductRequest dto) {
         // Auto-set isAvailable based on quantity if not explicitly set
-        if (product.getIsAvailable() == null) {
-            product.setIsAvailable(product.getQuantity() != null && product.getQuantity() > 0);
-        }
+        Product product = new Product();
+        product.setProductName(dto.getProductName());
+        product.setProductDescription(dto.getProductDescription());
+        product.setLaptopSpec(dto.getLaptopSpec());
+        product.setQuantity(dto.getQuantity());
+        product.setIsAvailable(dto.getIsAvailable());
+        product.setPrice(dto.getPrice());
+        product.setBrand(dto.getBrand());
+        // Fetch Category entity by ID
+        Category category =  categoryService.getCategoryById(dto.getCategoryId()).orElse(null);
+        product.setCategory(category);
+        product.setImageUrls(dto.getImageUrls());
         return productRepository.save(product);
     }
 

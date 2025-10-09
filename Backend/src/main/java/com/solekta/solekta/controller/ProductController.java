@@ -1,8 +1,12 @@
 package com.solekta.solekta.controller;
 
+import com.solekta.solekta.dto.ProductRequest;
 import com.solekta.solekta.dto.ProductResponse;
 import com.solekta.solekta.model.Product;
+import com.solekta.solekta.repository.ProductRepository;
+import com.solekta.solekta.service.CategoryService;
 import com.solekta.solekta.service.ProductService;
+import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -10,13 +14,14 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 import java.util.Optional;
 
-@RestController
+@RestController @AllArgsConstructor
 @RequestMapping("/api/products")
 @CrossOrigin(origins = "*") // allow React
 public class ProductController {
 
-    @Autowired
-    private ProductService productService;
+    private final ProductService productService;
+    private final CategoryService categoryService;
+    private final ProductRepository productRepository;
 
     @GetMapping
     public List<ProductResponse> getAllProducts() {
@@ -32,12 +37,12 @@ public class ProductController {
     }
 
     @PostMapping
-    public Product createProduct(@RequestBody Product product) {
-        return productService.saveProduct(product);
+    public Product createProduct(@RequestBody ProductRequest ProductRequest) {
+        return productService.saveProduct(ProductRequest);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Product> updateProduct(@PathVariable Long id, @RequestBody Product updatedProduct) {
+    public ResponseEntity<Product> updateProduct(@PathVariable Long id, @RequestBody ProductRequest updatedProduct) {
         return productService.getProductById(id)
                 .map(existing -> {
                     // Update all fields except the ID
@@ -48,8 +53,8 @@ public class ProductController {
                     existing.setIsAvailable(updatedProduct.getIsAvailable());
                     existing.setPrice(updatedProduct.getPrice());
                     existing.setImageUrls(updatedProduct.getImageUrls());
-                    existing.setCategory(updatedProduct.getCategory());
-                    return ResponseEntity.ok(productService.saveProduct(existing));
+                    existing.setCategory(categoryService.getCategoryById(updatedProduct.getCategoryId()).get());
+                    return ResponseEntity.ok(productRepository.save(existing));
                 })
                 .orElse(ResponseEntity.notFound().build());
     }

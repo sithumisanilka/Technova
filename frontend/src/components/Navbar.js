@@ -15,11 +15,20 @@ const Navbar = () => {
     >
       <h2>Technova Store</h2>
       <div>
+        {/* User Links */}
         <Link to="/" style={{ color: "#fff", marginRight: "15px", textDecoration: "none" }}>
           Home
         </Link>
-        <Link to="/products" style={{ color: "#fff", textDecoration: "none" }}>
+        <Link to="/products" style={{ color: "#fff", marginRight: "15px", textDecoration: "none" }}>
           Products
+        </Link>
+
+        {/* Admin Links */}
+        <Link to="/admin/products" style={{ color: "#fff", marginLeft: "20px", textDecoration: "none" }}>
+          Admin Products
+        </Link>
+        <Link to="/admin/categories" style={{ color: "#fff", marginLeft: "15px", textDecoration: "none" }}>
+          Admin Categories
         </Link>
       </div>
     </nav>

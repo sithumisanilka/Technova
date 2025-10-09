@@ -5,18 +5,14 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="b5c8b595-70ec-49b0-9f2d-9f5f5f00540a" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/src/main/java/com/solekta/solekta/dto/ProductResponse.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/com/solekta/solekta/dto/ProductRequest.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/com/solekta/solekta/controller/ProductController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/solekta/solekta/controller/ProductController.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/solekta/solekta/model/Product.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/solekta/solekta/model/Product.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/com/solekta/solekta/service/ProductService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/solekta/solekta/service/ProductService.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/target/classes/com/solekta/solekta/controller/ProductController.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/solekta/solekta/controller/ProductController.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/com/solekta/solekta/model/Product.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/solekta/solekta/model/Product.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../frontend/package-lock.json" beforeDir="false" afterPath="$PROJECT_DIR$/../frontend/package-lock.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../frontend/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/../frontend/package.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/solekta/solekta/service/ProductService.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/solekta/solekta/service/ProductService.class" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/../frontend/src/App.js" beforeDir="false" afterPath="$PROJECT_DIR$/../frontend/src/App.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../frontend/src/components/ProductList.css" beforeDir="false" afterPath="$PROJECT_DIR$/../frontend/src/components/ProductList.css" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../frontend/src/components/ProductList.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../frontend/src/components/Navbar.js" beforeDir="false" afterPath="$PROJECT_DIR$/../frontend/src/components/Navbar.js" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
