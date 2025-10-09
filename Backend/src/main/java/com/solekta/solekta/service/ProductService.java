@@ -1,5 +1,6 @@
 package com.solekta.solekta.service;
 
+import com.solekta.solekta.dto.ProductResponse;
 import com.solekta.solekta.model.Product;
 import com.solekta.solekta.repository.ProductRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,8 +15,11 @@ public class ProductService {
     @Autowired
     private ProductRepository productRepository;
 
-    public List<Product> getAllProducts() {
-        return productRepository.findAll();
+    public List<ProductResponse> getAllProducts() {
+        return productRepository.findAll()
+                .stream()
+                .map(ProductResponse::new)
+                .toList();
     }
 
     public Optional<Product> getProductById(Long id) {

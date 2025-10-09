@@ -1,5 +1,6 @@
 package com.solekta.solekta.controller;
 
+import com.solekta.solekta.dto.ProductResponse;
 import com.solekta.solekta.model.Product;
 import com.solekta.solekta.service.ProductService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,13 +19,14 @@ public class ProductController {
     private ProductService productService;
 
     @GetMapping
-    public List<Product> getAllProducts() {
+    public List<ProductResponse> getAllProducts() {
         return productService.getAllProducts();
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Product> getProductById(@PathVariable Long id) {
+    public ResponseEntity<ProductResponse> getProductById(@PathVariable Long id) {
         return productService.getProductById(id)
+                .map(ProductResponse::new)
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
     }

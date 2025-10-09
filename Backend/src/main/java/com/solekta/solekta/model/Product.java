@@ -29,7 +29,7 @@ public class Product {
     private Integer quantity = 0;
 
     @Column(name = "is_available")
-    private Boolean isAvailable = false;
+    private Boolean isAvailable = true;
 
     @Column(nullable = false)
     private Double price;
