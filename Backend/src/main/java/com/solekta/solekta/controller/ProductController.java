@@ -11,54 +11,71 @@ import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/products")
+@CrossOrigin(origins = "*") // allow React
 public class ProductController {
 
     @Autowired
     private ProductService productService;
 
-    // Get all products
     @GetMapping
     public List<Product> getAllProducts() {
         return productService.getAllProducts();
     }
 
-    // Get a product by ID
     @GetMapping("/{id}")
     public ResponseEntity<Product> getProductById(@PathVariable Long id) {
-        Optional<Product> product = productService.getProductById(id);
-        return product.map(ResponseEntity::ok)
-                .orElseGet(() -> ResponseEntity.notFound().build());
+        return productService.getProductById(id)
+                .map(ResponseEntity::ok)
+                .orElse(ResponseEntity.notFound().build());
     }
 
-    // Create a new product
-    @PostMapping("/register")
+    @PostMapping
     public Product createProduct(@RequestBody Product product) {
         return productService.saveProduct(product);
     }
 
-    // Update an existing product
     @PutMapping("/{id}")
     public ResponseEntity<Product> updateProduct(@PathVariable Long id, @RequestBody Product updatedProduct) {
-        Optional<Product> existingProduct = productService.getProductById(id);
-        if (existingProduct.isPresent()) {
-            updatedProduct.setProductId(id); // ensure ID is set
-            Product savedProduct = productService.saveProduct(updatedProduct);
-            return ResponseEntity.ok(savedProduct);
-        } else {
-            return ResponseEntity.notFound().build();
-        }
+        return productService.getProductById(id)
+                .map(existing -> {
+                    // Update all fields except the ID
+                    existing.setProductName(updatedProduct.getProductName());
+                    existing.setProductDescription(updatedProduct.getProductDescription());
+                    existing.setLaptopSpec(updatedProduct.getLaptopSpec());
+                    existing.setQuantity(updatedProduct.getQuantity());
+                    existing.setIsAvailable(updatedProduct.getIsAvailable());
+                    existing.setPrice(updatedProduct.getPrice());
+                    existing.setImageUrls(updatedProduct.getImageUrls());
+                    existing.setCategory(updatedProduct.getCategory());
+                    return ResponseEntity.ok(productService.saveProduct(existing));
+                })
+                .orElse(ResponseEntity.notFound().build());
     }
 
-    // Delete a product
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteProduct(@PathVariable Long id) {
-        Optional<Product> existingProduct = productService.getProductById(id);
-        if (existingProduct.isPresent()) {
-            productService.deleteProduct(id);
-            return ResponseEntity.noContent().build();
-        } else {
-            return ResponseEntity.notFound().build();
-        }
+    public ResponseEntity<Object> deleteProduct(@PathVariable Long id) {
+        return productService.getProductById(id)
+                .map(p -> {
+                    productService.deleteProduct(id);
+                    return ResponseEntity.noContent().build();
+                })
+                .orElse(ResponseEntity.notFound().build());
+    }
+
+    // Additional endpoints you might want to add:
+
+    @GetMapping("/available")
+    public List<Product> getAvailableProducts() {
+        return productService.getAvailableProducts();
+    }
+
+    @GetMapping("/category/{categoryId}")
+    public List<Product> getProductsByCategory(@PathVariable Long categoryId) {
+        return productService.getProductsByCategory(categoryId);
+    }
+
+    @GetMapping("/search")
+    public List<Product> searchProducts(@RequestParam String keyword) {
+        return productService.searchProducts(keyword);
     }
 }
-

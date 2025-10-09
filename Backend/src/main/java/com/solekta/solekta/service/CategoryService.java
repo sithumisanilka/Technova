@@ -1,39 +1,103 @@
 package com.solekta.solekta.service;
 
 import com.solekta.solekta.model.Category;
+import com.solekta.solekta.repository.CategoryRepository;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
 import java.util.List;
 import java.util.Optional;
 
-public interface CategoryService {
+@Service
+public class CategoryService {
 
-    // Get all categories
-    List<Category> getAllCategories();
+    @Autowired
+    private CategoryRepository categoryRepository;
 
-    // Get category by ID
-    Optional<Category> getCategoryById(Long id);
+    public List<Category> getAllCategories() {
+        return categoryRepository.findAll();
+    }
 
-    // Get category by name
-    Optional<Category> getCategoryByName(String name);
+    public Optional<Category> getCategoryById(Long id) {
+        return categoryRepository.findById(id);
+    }
 
-    // Create new category
-    Category saveCategory(Category category);
+    public Optional<Category> getCategoryByName(String name) {
+        return categoryRepository.findByCategoryName(name);
+    }
 
-    // Update category
-    Category updateCategory(Long id, Category categoryDetails);
+    public Boolean categoryExists(String name) {
+        return categoryRepository.existsByCategoryName(name);
+    }
 
-    // Delete category
-    void deleteCategory(Long id);
+    public Optional<Category> getCategoryWithProducts(Long id) {
+        return categoryRepository.findByIdWithProducts(id);
+    }
 
-    // Check if category exists by name
-    boolean existsByName(String name);
+    public List<Category> searchCategories(String keyword) {
+        return categoryRepository.searchCategories(keyword);
+    }
 
-    // Get only active categories (for frontend display)
-    List<Category> getActiveCategories();
+    public List<Category> getCategoriesWithProducts() {
+        return categoryRepository.findCategoriesWithProducts();
+    }
 
-    // Toggle category active status
-    Category toggleCategoryStatus(Long id);
+    public List<Category> getCategoriesWithoutProducts() {
+        return categoryRepository.findCategoriesWithoutProducts();
+    }
 
-    // Specialized methods for your repair shop business
-    List<Category> getProductCategories(); // Laptops, Phones, Accessories
-    List<Category> getServiceCategories(); // Repair Services
+    public Category saveCategory(Category category) {
+        // Validate unique category name before saving
+        if (category.getCategoryId() == null && categoryRepository.existsByCategoryName(category.getCategoryName())) {
+            throw new RuntimeException("Category with name '" + category.getCategoryName() + "' already exists");
+        }
+        return categoryRepository.save(category);
+    }
+
+    public Category updateCategory(Long id, Category categoryDetails) {
+        Category category = categoryRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Category not found with id: " + id));
+
+        // Check if name is being changed and if new name already exists
+        if (!category.getCategoryName().equals(categoryDetails.getCategoryName()) &&
+                categoryRepository.existsByCategoryName(categoryDetails.getCategoryName())) {
+            throw new RuntimeException("Category with name '" + categoryDetails.getCategoryName() + "' already exists");
+        }
+
+        // Update fields
+        category.setCategoryName(categoryDetails.getCategoryName());
+        category.setCategoryDescription(categoryDetails.getCategoryDescription());
+
+        return categoryRepository.save(category);
+    }
+
+    public void deleteCategory(Long id) {
+        Category category = categoryRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Category not found with id: " + id));
+
+        // Check if category has products before deletion
+        if (!category.getProducts().isEmpty()) {
+            throw new RuntimeException("Cannot delete category with existing products. Please remove products first.");
+        }
+
+        categoryRepository.deleteById(id);
+    }
+
+    public Long getCategoryCount() {
+        return categoryRepository.count();
+    }
+
+    public Long getCategoryCountBySearch(String keyword) {
+        return categoryRepository.countByCategoryNameContainingIgnoreCase(keyword);
+    }
+
+    // Method to safely delete category even if it has products (transfers or removes products)
+    public void deleteCategoryForcefully(Long id) {
+        Category category = categoryRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Category not found with id: " + id));
+
+        // This will cascade delete if CascadeType.ALL is set in the relationship
+        // Or you can manually handle product reassignment here
+        categoryRepository.deleteById(id);
+    }
 }
