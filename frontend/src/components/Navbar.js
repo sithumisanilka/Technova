@@ -1,17 +1,29 @@
-// src/components/Navbar.js
 import React from "react";
 import { Link } from "react-router-dom";
 
-function Navbar() {
+const Navbar = () => {
   return (
-    <nav className="bg-gray-800 text-white p-4 flex justify-between items-center">
-      <h1 className="text-xl font-bold">Solekta Admin</h1>
-      <div className="space-x-4">
-        <Link to="/products" className="hover:text-blue-300">Products</Link>
-        <Link to="/categories" className="hover:text-blue-300">Categories</Link>
+    <nav
+      style={{
+        display: "flex",
+        justifyContent: "space-between",
+        alignItems: "center",
+        padding: "10px 20px",
+        backgroundColor: "#333",
+        color: "#fff",
+      }}
+    >
+      <h2>Technova Store</h2>
+      <div>
+        <Link to="/" style={{ color: "#fff", marginRight: "15px", textDecoration: "none" }}>
+          Home
+        </Link>
+        <Link to="/products" style={{ color: "#fff", textDecoration: "none" }}>
+          Products
+        </Link>
       </div>
     </nav>
   );
-}
+};
 
 export default Navbar;
