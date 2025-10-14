@@ -1,0 +1,10 @@
+{
+  "customerId": 1,
+  "shippingName": "John Doe",
+  "shippingAddress": "123 Main Street",
+  "shippingCity": "Singapore",
+  "shippingPostalCode": "123456",
+  "shippingPhone": "+6512345678",
+  "paymentMethod": "CREDIT_CARD",
+  "notes": "Please deliver after 6 PM"
+}

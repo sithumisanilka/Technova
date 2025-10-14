@@ -1,0 +1,265 @@
+{
+"info": {
+"name": "SOLEKTA E-commerce API",
+"description": "Postman collection for SOLEKTA backend APIs",
+"schema": "[https://schema.getpostman.com/json/collection/v2.1.0/collection.json](https://schema.getpostman.com/json/collection/v2.1.0/collection.json)",
+"_postman_id": "solekta-ecommerce-collection"
+},
+"item": [
+{
+"name": "Cart",
+"item": [
+{
+"name": "Get Cart",
+"request": {
+"method": "GET",
+"url": "{{baseUrl}}/api/cart/{{customerId}}"
+}
+},
+{
+"name": "Add Item to Cart",
+"request": {
+"method": "POST",
+"url": "{{baseUrl}}/api/cart/{{customerId}}/items",
+"body": {
+"mode": "raw",
+"raw": "{\n  \"productId\": 1,\n  \"quantity\": 2,\n  \"unitPrice\": 1000.00\n}"
+}
+}
+},
+{
+"name": "Update Cart Item",
+"request": {
+"method": "PUT",
+"url": "{{baseUrl}}/api/cart/{{customerId}}/items/{{productId}}",
+"body": {
+"mode": "raw",
+"raw": "{\n  \"quantity\": 3\n}"
+}
+}
+},
+{
+"name": "Remove Item from Cart",
+"request": {
+"method": "DELETE",
+"url": "{{baseUrl}}/api/cart/{{customerId}}/items/{{productId}}"
+}
+},
+{
+"name": "Clear Cart",
+"request": {
+"method": "DELETE",
+"url": "{{baseUrl}}/api/cart/{{customerId}}"
+}
+}
+]
+},
+{
+"name": "Orders",
+"item": [
+{
+"name": "Checkout",
+"request": {
+"method": "POST",
+"url": "{{baseUrl}}/api/orders/checkout",
+"body": {
+"mode": "raw",
+"raw": "{\n  \"customerId\": 1,\n  \"email\": \"customer@example.com\",\n  \"shippingName\": \"John Doe\",\n  \"shippingAddress\": \"123 Main St\",\n  \"shippingCity\": \"New York\",\n  \"shippingPostalCode\": \"10001\",\n  \"shippingPhone\": \"+1-555-123-4567\",\n  \"paymentMethod\": \"CREDIT_CARD\",\n  \"notes\": \"Please ring doorbell\"\n}"
+}
+}
+},
+{
+"name": "Get Order by ID",
+"request": {
+"method": "GET",
+"url": "{{baseUrl}}/api/orders/{{orderId}}"
+}
+},
+{
+"name": "Get Order by Number",
+"request": {
+"method": "GET",
+"url": "{{baseUrl}}/api/orders/number/{{orderNumber}}"
+}
+},
+{
+"name": "Get Orders by Customer ID",
+"request": {
+"method": "GET",
+"url": "{{baseUrl}}/api/orders/customer/{{customerId}}"
+}
+},
+{
+"name": "Get Orders by Customer ID (Paginated)",
+"request": {
+"method": "GET",
+"url": "{{baseUrl}}/api/orders/customer/{{customerId}}/paginated?page=0&size=10"
+}
+},
+{
+"name": "Update Order Status",
+"request": {
+"method": "PUT",
+"url": "{{baseUrl}}/api/orders/{{orderId}}/status?status=SHIPPED"
+}
+},
+{
+"name": "Get All Orders",
+"request": {
+"method": "GET",
+"url": "{{baseUrl}}/api/orders"
+}
+},
+{
+"name": "Get Orders by Status",
+"request": {
+"method": "GET",
+"url": "{{baseUrl}}/api/orders/status/{{status}}"
+}
+},
+{
+"name": "Get Orders by Date Range",
+"request": {
+"method": "GET",
+"url": "{{baseUrl}}/api/orders/date-range?startDate=2025-01-01T00:00:00&endDate=2025-12-31T23:59:59"
+}
+}
+]
+},
+{
+"name": "Payments",
+"item": [
+{
+"name": "Process Payment",
+"request": {
+"method": "POST",
+"url": "{{baseUrl}}/api/payments/process",
+"body": {
+"mode": "raw",
+"raw": "{\n  \"orderId\": 1,\n  \"paymentMethod\": \"CREDIT_CARD\",\n  \"cardNumber\": \"1234567890123456\",\n  \"cardHolderName\": \"John Doe\",\n  \"expiryDate\": \"12/25\",\n  \"cvv\": \"123\",\n  \"notes\": \"Payment for order\"\n}"
+}
+}
+},
+{
+"name": "Get Payment by ID",
+"request": {
+"method": "GET",
+"url": "{{baseUrl}}/api/payments/{{paymentId}}"
+}
+},
+{
+"name": "Get Payment by Order ID",
+"request": {
+"method": "GET",
+"url": "{{baseUrl}}/api/payments/order/{{orderId}}"
+}
+},
+{
+"name": "Get Payment by Number",
+"request": {
+"method": "GET",
+"url": "{{baseUrl}}/api/payments/number/{{paymentNumber}}"
+}
+},
+{
+"name": "Get Payments by Status",
+"request": {
+"method": "GET",
+"url": "{{baseUrl}}/api/payments/status/{{status}}"
+}
+},
+{
+"name": "Refund Payment",
+"request": {
+"method": "POST",
+"url": "{{baseUrl}}/api/payments/{{paymentId}}/refund?reason=Customer request"
+}
+}
+]
+},
+{
+"name": "Products",
+"item": [
+{
+"name": "Get All Products",
+"request": {
+"method": "GET",
+"url": "{{baseUrl}}/api/products"
+}
+},
+{
+"name": "Get Product by ID",
+"request": {
+"method": "GET",
+"url": "{{baseUrl}}/api/products/{{productId}}"
+}
+},
+{
+"name": "Create Product",
+"request": {
+"method": "POST",
+"url": "{{baseUrl}}/api/products",
+"body": {
+"mode": "raw",
+"raw": "{\n  \"name\": \"Sample Laptop\",\n  \"description\": \"High-performance laptop\",\n  \"price\": 1000.00,\n  \"brand\": \"TechBrand\",\n  \"quantity\": 50,\n  \"model\": \"LAP-001\",\n  \"processor\": \"Intel i7\",\n  \"ram\": \"16GB\",\n  \"storage\": \"512GB SSD\",\n  \"graphics\": \"NVIDIA GTX\",\n  \"display\": \"15.6 inch\"\n}"
+}
+}
+},
+{
+"name": "Update Product",
+"request": {
+"method": "PUT",
+"url": "{{baseUrl}}/api/products/{{productId}}",
+"body": {
+"mode": "raw",
+"raw": "{\n  \"name\": \"Updated Laptop\",\n  \"description\": \"Updated high-performance laptop\",\n  \"price\": 1200.00,\n  \"brand\": \"TechBrand\",\n  \"quantity\": 60,\n  \"model\": \"LAP-002\",\n  \"processor\": \"Intel i9\",\n  \"ram\": \"32GB\",\n  \"storage\": \"1TB SSD\",\n  \"graphics\": \"NVIDIA RTX\",\n  \"display\": \"17.3 inch\"\n}"
+}
+}
+},
+{
+"name": "Delete Product",
+"request": {
+"method": "DELETE",
+"url": "{{baseUrl}}/api/products/{{productId}}"
+}
+}
+]
+},
+{
+"name": "Email Testing",
+"item": [
+{
+"name": "Test Order Confirmation Email",
+"request": {
+"method": "POST",
+"url": "{{baseUrl}}/api/test/email/send-order-confirmation?email=test@example.com"
+}
+},
+{
+"name": "Test Status Update Email",
+"request": {
+"method": "POST",
+"url": "{{baseUrl}}/api/test/email/send-status-update?email=test@example.com"
+}
+},
+{
+"name": "Test Admin Notification Email",
+"request": {
+"method": "POST",
+"url": "{{baseUrl}}/api/test/email/send-admin-notification"
+}
+}
+]
+}
+],
+"variable": [
+{ "key": "baseUrl", "value": "http://localhost:8081" },
+{ "key": "customerId", "value": "1" },
+{ "key": "productId", "value": "1" },
+{ "key": "orderId", "value": "1" },
+{ "key": "orderNumber", "value": "ORD-123456789" },
+{ "key": "paymentId", "value": "1" },
+{ "key": "paymentNumber", "value": "PAY-987654321" },
+{ "key": "status", "value": "PENDING" }
+]
+}
