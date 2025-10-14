@@ -26,7 +26,10 @@ public class User {
     private String email;
 
     @Column(nullable = false)
-    private String role = "USER";  // default role
+    private String role;  // no default, we’ll assign in controller
+
+
+
 }
 
 
