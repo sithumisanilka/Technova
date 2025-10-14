@@ -35,10 +35,23 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
-                .csrf(csrf -> csrf.disable()) // Disable CSRF for API testing
+                .csrf(csrf -> csrf.disable())
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/api/auth/register", "/api/auth/login").permitAll() // public endpoints
+                        // Public endpoints
+                        .requestMatchers(
+                                "/api/auth/register",
+                                "/api/auth/login",
+                                "/api/auth/forgot-password"
+                        ).permitAll()
+
+                        // User endpoints (accessible only after login)
+                        .requestMatchers("/api/users/me").authenticated()
+
+                        // Admin-only endpoints
+                        .requestMatchers("/api/users/**").hasRole("ADMIN")
+
+                        // Everything else requires authentication
                         .anyRequest().authenticated()
                 )
                 .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
@@ -56,27 +69,20 @@ public class SecurityConfig {
         return config.getAuthenticationManager();
     }
 
-    /**
-     * CORS configuration: allows Postman and React frontend
-     */
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-
-        // ✅ Temporary: allow all origins for Postman testing
         configuration.setAllowedOrigins(Arrays.asList("http://localhost:3000"));
         configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
         configuration.setAllowedHeaders(Arrays.asList("*"));
-        configuration.setAllowCredentials(true); // cannot be true with "*"
+        configuration.setAllowCredentials(true);
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", configuration);
         return source;
     }
 
-    /**
-     * Logging filter: prints every incoming request
-     */
+    // ✅ Optional: log every incoming request for debugging
     @Bean
     public Filter loggingFilter() {
         return new GenericFilterBean() {
@@ -90,6 +96,7 @@ public class SecurityConfig {
         };
     }
 }
+
 
 
 
