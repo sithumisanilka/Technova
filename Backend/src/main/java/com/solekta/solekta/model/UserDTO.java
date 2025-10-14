@@ -1,5 +1,6 @@
 package com.solekta.solekta.model;
 
+
 public class UserDTO {
     private Long id;
     private String username;
