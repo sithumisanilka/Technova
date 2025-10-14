@@ -2,6 +2,7 @@ package com.solekta.solekta.controller;
 
 import com.solekta.solekta.dto.RegisterRequest;
 import com.solekta.solekta.dto.UserProfileResponse;
+import com.solekta.solekta.dto.UpdateProfileRequest;
 import com.solekta.solekta.model.Profile;
 import com.solekta.solekta.model.User;
 import com.solekta.solekta.repository.ProfileRepository;
@@ -41,15 +42,19 @@ public class AuthController {
         this.profileRepository = profileRepository;
     }
 
-    // ✅ User registration
     @PostMapping("/register")
     public String register(@RequestBody RegisterRequest request) {
+        // Determine role
+        String userRole = (request.getRole() == null || request.getRole().isEmpty())
+                ? "USER"
+                : request.getRole().toUpperCase();
+
         // 1️⃣ Create and save user
         User user = User.builder()
                 .username(request.getUsername())
                 .email(request.getEmail())
                 .password(passwordEncoder.encode(request.getPassword()))
-                .role("USER")
+                .role(userRole)
                 .build();
         User savedUser = userRepository.save(user);
 
@@ -62,8 +67,9 @@ public class AuthController {
                 .build();
         profileService.createProfile(profile);
 
-        return "User registered successfully with profile!";
+        return "User registered successfully with role: " + userRole + " and profile!";
     }
+
 
     // ✅ Login
     @PostMapping("/login")
@@ -93,6 +99,55 @@ public class AuthController {
                 profile != null ? profile.getPhoneNumber() : null
         );
     }
+    // ✅ Update profile
+    @PutMapping("/update-profile")
+    public String updateProfile(@AuthenticationPrincipal UserDetails userDetails,
+                                @RequestBody UpdateProfileRequest request) {
+
+        User user = userRepository.findByUsername(userDetails.getUsername())
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
+        // Update user info
+        if (request.getEmail() != null && !request.getEmail().isEmpty()) {
+            user.setEmail(request.getEmail());
+        }
+        if (request.getPassword() != null && !request.getPassword().isEmpty()) {
+            user.setPassword(passwordEncoder.encode(request.getPassword()));
+        }
+        userRepository.save(user);
+
+        // Update profile info
+        Profile profile = profileRepository.findByUser(user)
+                .orElse(new Profile());
+        profile.setUser(user);
+        profile.setFirstName(request.getFirstName());
+        profile.setLastName(request.getLastName());
+        profile.setPhoneNumber(request.getPhoneNumber());
+        profileRepository.save(profile);
+
+        return "Profile updated successfully!";
+    }
+
+
+    // ✅ Forgot password (basic simulation — you can later integrate email)
+    @PostMapping("/forgot-password")
+    public String forgotPassword(@RequestParam String email) {
+        User user = userRepository.findAll()
+                .stream()
+                .filter(u -> u.getEmail().equals(email))
+                .findFirst()
+                .orElseThrow(() -> new RuntimeException("Email not found"));
+
+        // Generate a temporary password
+        String tempPassword = "Temp@" + System.currentTimeMillis() % 10000;
+        user.setPassword(passwordEncoder.encode(tempPassword));
+        userRepository.save(user);
+
+        // For demo: print to console or return it (in real system, send email)
+        System.out.println("Temporary password for " + email + ": " + tempPassword);
+        return "Temporary password sent to your email (check console).";
+    }
+
 }
 
 
