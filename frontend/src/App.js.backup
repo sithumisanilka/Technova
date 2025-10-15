@@ -1,0 +1,35 @@
+import React, { useState } from 'react';
+import NavigationBar from './components/NavigationBar';
+import ServiceBookingForm from './components/ServiceBookingForm';
+import CalendarInterface from './components/CalendarInterface';
+import ServiceDashboard from './components/ServiceDashboard';
+// import 'bootstrap/dist/css/bootstrap.min.css';
+import './App.css';
+
+function App() {
+    const [activeTab, setActiveTab] = useState('booking');
+
+    const renderContent = () => {
+        switch (activeTab) {
+            case 'booking':
+                return <ServiceBookingForm />;
+            case 'calendar':
+                return <CalendarInterface />;
+            case 'dashboard':
+                return <ServiceDashboard />;
+            default:
+                return <ServiceBookingForm />;
+        }
+    };
+
+    return (
+        <div className="App">
+            <NavigationBar activeTab={activeTab} setActiveTab={setActiveTab} />
+            <div className="container-fluid mt-4">
+                {renderContent()}
+            </div>
+        </div>
+    );
+}
+
+export default App;

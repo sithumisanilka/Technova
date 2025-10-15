@@ -1,0 +1,9 @@
+.calendar-appointment-card {
+    border-left: 4px solid #007bff;
+    transition: all 0.2s;
+}
+
+.calendar-appointment-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}

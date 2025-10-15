@@ -1,0 +1,23 @@
+.navbar-brand {
+    font-size: 1.5rem;
+    font-weight: bold;
+}
+
+.nav-link.btn {
+    color: rgba(255, 255, 255, 0.85) !important;
+    text-decoration: none;
+    padding: 0.5rem 1rem;
+}
+
+.nav-link.btn:hover {
+    color: white !important;
+    background-color: rgba(255, 255, 255, 0.1);
+    border-radius: 0.25rem;
+}
+
+.nav-link.btn.active {
+    color: white !important;
+    background-color: rgba(255, 255, 255, 0.2);
+    border-radius: 0.25rem;
+    font-weight: 600;
+}

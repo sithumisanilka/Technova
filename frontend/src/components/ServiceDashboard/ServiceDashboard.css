@@ -1,0 +1,22 @@
+.service-card {
+    transition: transform 0.2s, box-shadow 0.2s;
+    height: 100%;
+}
+
+.service-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.service-form-card {
+    background-color: #f8f9fa;
+    border: 1px solid #dee2e6;
+}
+
+.service-actions {
+    margin-top: 1rem;
+}
+
+.service-list {
+    margin-top: 1.5rem;
+}
