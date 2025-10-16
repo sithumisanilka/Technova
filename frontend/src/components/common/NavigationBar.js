@@ -3,16 +3,14 @@ import { useAuth } from '../../contexts/AuthContext';
 import './NavigationBar.css';
 
 const NavigationBar = ({ activeTab, setActiveTab }) => {
-    const { user, isAdmin, logout } = useAuth();
+    const { user, isAdmin, logout, switchRole } = useAuth(); // ✅ Add switchRole
 
-    // ✅ Customer tabs - NO admin access
     const customerTabs = [
         { id: 'booking', label: 'Book Service', icon: '📅' },
         { id: 'myBookings', label: 'My Bookings', icon: '📋' },
         { id: 'calendar', label: 'Calendar', icon: '🗓️' }
     ];
 
-    // ✅ Admin tabs - Full access
     const adminTabs = [
         { id: 'appointments', label: 'Manage Bookings', icon: '📊' },
         { id: 'services', label: 'Manage Services', icon: '⚙️' },
@@ -48,6 +46,16 @@ const NavigationBar = ({ activeTab, setActiveTab }) => {
                                 {user?.role || 'CUSTOMER'}
                             </span>
                         </span>
+                        
+                        {/* ✅ NEW - Switch Role Button (FOR TESTING ONLY) */}
+                        <button 
+                            className="btn btn-warning btn-sm me-2" 
+                            onClick={switchRole}
+                            title="Switch between Customer and Admin (Testing Only)"
+                        >
+                            🔄 Switch to {isAdmin() ? 'Customer' : 'Admin'}
+                        </button>
+                        
                         <button className="btn btn-outline-light btn-sm" onClick={logout}>
                             🚪 Logout
                         </button>

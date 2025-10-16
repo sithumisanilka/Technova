@@ -1,27 +1,71 @@
-# Compiled class file
-./Backend/*.class
+# === Global ignores ===
+.DS_Store
+Thumbs.db
+*.log
+*.tmp
+*.swp
 
-# Log file
-./Backend/*.log
+# === IDEs and editors ===
+.idea/
+.vscode/
+*.iml
 
-# BlueJ files
-./Backend/*.ctxt
+# === OS-specific ===
+ehthumbs.db
+Icon?
+.Spotlight-V100
+.Trashes
+*.~lock.*#
 
-# Mobile Tools for Java (J2ME)
-./Backend/.mtj.tmp/
+# === Frontend: React ===
+frontend/node_modules/
+frontend/build/
+frontend/dist/
+frontend/.env
+frontend/.env.*
+frontend/.cache/
+frontend/.vite/
+frontend/coverage/
+frontend/*.tgz
 
-# Package Files #
-./Backend/*.jar
-./Backend/*.war
-./Backend/*.nar
-./Backend/*.ear
-./Backend/*.zip
-./Backend/*.tar.gz
-./Backend/*.rar
+# Frontend logs
+frontend/npm-debug.log*
+frontend/yarn-debug.log*
+frontend/yarn-error.log*
 
-# virtual machine crash logs, see http://www.java.com/en/download/help/error_hotspot.xml
-./Backend/hs_err_pid*
-./Backend/replay_pid*
+# === Backend: Spring Boot ===
+Backend/target/
+Backend/.classpath
+Backend/.project
+Backend/.settings/
+Backend/*.class
+Backend/*.jar
+Backend/*.war
+Backend/*.ear
+Backend/*.log
 
-.gitignore
+# Maven and Gradle
+Backend/.mvn/
+Backend/mvnw
+Backend/mvnw.cmd
+Backend/.gradle/
+Backend/build/
+Backend/gradle-app.setting
 
+# Backend config files
+Backend/*.env
+Backend/*.properties
+Backend/*.yml
+Backend/*.yaml
+
+# === Optional: logs ===
+logs/
+*.log
+
+# === Optional: backups & temp files ===
+*.bak
+*.tmp
+*.orig
+*.rej
+*.swo
+*.swn

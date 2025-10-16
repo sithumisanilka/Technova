@@ -1,6 +1,7 @@
 package com.solekta.solekta.controller;
 
 import com.solekta.solekta.model.Product;
+import com.solekta.solekta.service.ProductService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -10,10 +11,11 @@ import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/products")
+@CrossOrigin(origins = {"http://localhost:3000", "http://localhost:3001"})
 public class ProductController {
 
     @Autowired
-    private productService;
+    private ProductService productService;
 
     // Get all products
     @GetMapping
@@ -30,7 +32,7 @@ public class ProductController {
     }
 
     // Create a new product
-    @PostMapping("/register")
+    @PostMapping
     public Product createProduct(@RequestBody Product product) {
         return productService.saveProduct(product);
     }
@@ -60,4 +62,3 @@ public class ProductController {
         }
     }
 }
-

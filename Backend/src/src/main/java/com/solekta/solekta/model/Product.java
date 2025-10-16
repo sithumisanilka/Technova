@@ -1,6 +1,5 @@
 package com.solekta.solekta.model;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -29,7 +28,6 @@ public class Product {
     // Many products belong to one category
     @ManyToOne
     @JoinColumn(name = "category_id", referencedColumnName = "categoryId")
-    @JsonIgnore
     private Category category;
 
     // Getters and setters

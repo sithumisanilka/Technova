@@ -21,18 +21,18 @@ export const AuthProvider = ({ children }) => {
             setUser(JSON.parse(storedUser));
             setIsAuthenticated(true);
         } else {
-            // Default to CUSTOMER for demo
-            const mockUser = {
+            // Default Customer user
+            const mockCustomer = {
                 id: 1,
-                name: 'John Doe',
+                name: 'User',  // ✅ Customer name
                 email: 'john@example.com',
                 phone: '1234567890',
-                role: 'CUSTOMER', // Change this to 'ADMIN' to test admin panel
+                role: 'CUSTOMER',
                 token: 'mock-token-123'
             };
-            setUser(mockUser);
+            setUser(mockCustomer);
             setIsAuthenticated(true);
-            localStorage.setItem('user', JSON.stringify(mockUser));
+            localStorage.setItem('user', JSON.stringify(mockCustomer));
         }
         setLoading(false);
     }, []);
@@ -49,16 +49,32 @@ export const AuthProvider = ({ children }) => {
         setIsAuthenticated(false);
         localStorage.removeItem('user');
         localStorage.removeItem('authToken');
-        window.location.reload(); // ✅ Fixed - just reload
+        window.location.reload();
     };
 
-    // ✅ NEW FUNCTION - Switch role for testing
     const switchRole = () => {
-        const newRole = user?.role === 'CUSTOMER' ? 'ADMIN' : 'CUSTOMER';
-        const newUser = { ...user, role: newRole };
+        // Switch between Customer and Admin
+        const newUser = user?.role === 'CUSTOMER' 
+            ? { 
+                id: 2, 
+                name: 'Mr. Neel',  // ✅ Admin name
+                email: 'neel@admin.com', 
+                phone: '0987654321', 
+                role: 'ADMIN', 
+                token: 'mock-token-456' 
+            }
+            : { 
+                id: 1, 
+                name: 'User',  // ✅ Customer name
+                email: 'john@example.com', 
+                phone: '1234567890', 
+                role: 'CUSTOMER', 
+                token: 'mock-token-123' 
+            };
+        
         setUser(newUser);
         localStorage.setItem('user', JSON.stringify(newUser));
-        window.location.reload(); // Reload to apply changes
+        window.location.reload();
     };
 
     const isAdmin = () => {
@@ -79,7 +95,7 @@ export const AuthProvider = ({ children }) => {
         loading,
         login,
         logout,
-        switchRole, // ✅ NEW - For testing
+        switchRole,
         isAdmin,
         isCustomer,
         getUserId
