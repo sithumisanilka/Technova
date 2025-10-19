@@ -6,8 +6,8 @@ import lombok.*;
 
 @Entity
 @Table(name = "product")
-@Getter
-@Setter
+@Data
+@Builder
 @NoArgsConstructor
 @AllArgsConstructor
 public class Product {
@@ -26,9 +26,11 @@ public class Product {
     private String laptopSpec;
 
     @Column(nullable = false)
+    @Builder.Default
     private Integer quantity = 0;
 
     @Column(name = "is_available")
+    @Builder.Default
     private Boolean isAvailable = false;
 
     @Column(nullable = false)

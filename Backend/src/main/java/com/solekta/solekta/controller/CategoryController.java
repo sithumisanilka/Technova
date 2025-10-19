@@ -40,7 +40,7 @@ public class CategoryController {
                 .map(existing -> {
                     // Update all fields
                     existing.setCategoryName(updatedCategory.getCategoryName());
-                    existing.setCategoryDescription(updatedCategory.getCategoryDescription());
+                    existing.setDescription(updatedCategory.getDescription());
                     return ResponseEntity.ok(categoryService.saveCategory(existing));
                 })
                 .orElse(ResponseEntity.notFound().build());

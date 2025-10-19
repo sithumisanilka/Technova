@@ -1,11 +1,13 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import { useAuth } from '../../context/AuthContext';
 import { useCart } from '../../context/CartContext';
 import './Header.css';
 
 const Header = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const { user, isAuthenticated, logout, isAdmin } = useAuth();
   const { itemCount } = useCart();
   const navigate = useNavigate();
 
@@ -21,6 +23,12 @@ const Header = () => {
     setIsMobileMenuOpen(!isMobileMenuOpen);
   };
 
+  const handleLogout = () => {
+    logout();
+    navigate('/');
+    setIsMobileMenuOpen(false);
+  };
+
   return (
     <header className="header">
       <div className="container">
@@ -32,7 +40,7 @@ const Header = () => {
 
           {/* Desktop Navigation */}
           <nav className={`nav ${isMobileMenuOpen ? 'nav-mobile-open' : ''}`}>
-            <Link to="/products" className="nav-link">
+            <Link to="/products" className="nav-link" onClick={() => setIsMobileMenuOpen(false)}>
               Products
             </Link>
             
@@ -50,9 +58,33 @@ const Header = () => {
               </button>
             </form>
 
-            <Link to="/cart" className="cart-link">
-              🛒 Cart ({itemCount})
-            </Link>
+            {isAuthenticated() ? (
+              <>
+                <Link to="/cart" className="cart-link" onClick={() => setIsMobileMenuOpen(false)}>
+                  🛒 Cart ({itemCount})
+                </Link>
+                {isAdmin() && (
+                  <Link to="/admin" className="nav-link admin-link" onClick={() => setIsMobileMenuOpen(false)}>
+                    ⚙️ Admin
+                  </Link>
+                )}
+                <Link to="/profile" className="nav-link" onClick={() => setIsMobileMenuOpen(false)}>
+                  👤 {user?.username} {user?.role === 'ADMIN' && '(Admin)'}
+                </Link>
+                <button onClick={handleLogout} className="nav-link logout-btn">
+                  Logout
+                </button>
+              </>
+            ) : (
+              <>
+                <Link to="/login" className="nav-link" onClick={() => setIsMobileMenuOpen(false)}>
+                  Login
+                </Link>
+                <Link to="/register" className="nav-link register-btn" onClick={() => setIsMobileMenuOpen(false)}>
+                  Register
+                </Link>
+              </>
+            )}
           </nav>
 
           {/* Mobile Menu Button */}

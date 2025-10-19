@@ -2,10 +2,11 @@ package com.solekta.solekta.service;
 
 import com.solekta.solekta.dto.PaymentDTO;
 import com.solekta.solekta.dto.PaymentRequest;
+import com.solekta.solekta.exception.ResourceNotFoundException;
 import com.solekta.solekta.model.Order;
 import com.solekta.solekta.model.PaymentTransaction;
-import com.solekta.solekta.repositories.OrderRepository;
-import com.solekta.solekta.repositories.PaymentTransactionRepository;
+import com.solekta.solekta.repository.OrderRepository;
+import com.solekta.solekta.repository.PaymentTransactionRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -27,15 +28,15 @@ public class PaymentService {
 
     public PaymentDTO processPayment(PaymentRequest paymentRequest) {
         Order order = orderRepository.findById(paymentRequest.getOrderId())
-                .orElseThrow(() -> new RuntimeException("Order not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Order not found"));
 
         PaymentTransaction payment = order.getPayment();
         if (payment == null) {
-            throw new RuntimeException("Payment not found for order");
+            throw new ResourceNotFoundException("Payment not found for order");
         }
 
         if (payment.getStatus() == PaymentTransaction.PaymentStatus.COMPLETED) {
-            throw new RuntimeException("Payment already completed");
+            throw new ResourceNotFoundException("Payment already completed");
         }
 
         // Simulate payment processing
@@ -69,19 +70,19 @@ public class PaymentService {
 
     public PaymentDTO getPaymentById(Long paymentId) {
         PaymentTransaction payment = paymentRepository.findById(paymentId)
-                .orElseThrow(() -> new RuntimeException("Payment not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Payment not found"));
         return convertToDTO(payment);
     }
 
     public PaymentDTO getPaymentByOrderId(Long orderId) {
         PaymentTransaction payment = paymentRepository.findByOrderId(orderId)
-                .orElseThrow(() -> new RuntimeException("Payment not found for order"));
+                .orElseThrow(() -> new ResourceNotFoundException("Payment not found for order"));
         return convertToDTO(payment);
     }
 
     public PaymentDTO getPaymentByPaymentNumber(String paymentNumber) {
         PaymentTransaction payment = paymentRepository.findByPaymentNumber(paymentNumber)
-                .orElseThrow(() -> new RuntimeException("Payment not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Payment not found"));
         return convertToDTO(payment);
     }
 
@@ -92,10 +93,10 @@ public class PaymentService {
 
     public PaymentDTO refundPayment(Long paymentId, String reason) {
         PaymentTransaction payment = paymentRepository.findById(paymentId)
-                .orElseThrow(() -> new RuntimeException("Payment not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Payment not found"));
 
         if (payment.getStatus() != PaymentTransaction.PaymentStatus.COMPLETED) {
-            throw new RuntimeException("Can only refund completed payments");
+            throw new ResourceNotFoundException("Can only refund completed payments");
         }
 
         payment.setStatus(PaymentTransaction.PaymentStatus.REFUNDED);

@@ -2,12 +2,13 @@ package com.solekta.solekta.service;
 
 import com.solekta.solekta.dto.CartDTO;
 import com.solekta.solekta.dto.CartItemDTO;
+import com.solekta.solekta.exception.ResourceNotFoundException;
 import com.solekta.solekta.model.CartItem;
 import com.solekta.solekta.model.Product;
 import com.solekta.solekta.model.ShoppingCart;
-import com.solekta.solekta.repositories.CartItemRepository;
+import com.solekta.solekta.repository.CartItemRepository;
 import com.solekta.solekta.repository.ProductRepository;
-import com.solekta.solekta.repositories.ShoppingCartRepository;
+import com.solekta.solekta.repository.ShoppingCartRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -40,13 +41,14 @@ public class CartService {
 
         // Fetch product details
         Product product = productRepository.findById(productId)
-                .orElseThrow(() -> new RuntimeException("Product not found with ID: " + productId));
+                .orElseThrow(() -> new ResourceNotFoundException("Product not found with ID: " + productId));
 
         CartItem existingItem = cartItemRepository.findByCartIdAndProductId(cart.getId(), productId)
                 .orElse(null);
 
         if (existingItem != null) {
             existingItem.setQuantity(existingItem.getQuantity() + quantity);
+            existingItem.setTotalPrice(existingItem.getUnitPrice().multiply(BigDecimal.valueOf(existingItem.getQuantity())));
             cartItemRepository.save(existingItem);
         } else {
             CartItem newItem = CartItem.builder()
@@ -56,6 +58,7 @@ public class CartService {
                     .productSku(product.getCategory().toString()) // Using model as SKU for now
                     .quantity(quantity)
                     .unitPrice(unitPrice)
+                    .totalPrice(unitPrice.multiply(BigDecimal.valueOf(quantity)))
                     .build();
             cartItemRepository.save(newItem);
         }
@@ -66,15 +69,16 @@ public class CartService {
 
     public CartDTO updateCartItem(Long customerId, Long productId, Integer quantity) {
         ShoppingCart cart = cartRepository.findByCustomerId(customerId)
-                .orElseThrow(() -> new RuntimeException("Cart not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Cart not found"));
 
         CartItem cartItem = cartItemRepository.findByCartIdAndProductId(cart.getId(), productId)
-                .orElseThrow(() -> new RuntimeException("Cart item not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Cart item not found"));
 
         if (quantity <= 0) {
             cartItemRepository.delete(cartItem);
         } else {
             cartItem.setQuantity(quantity);
+            cartItem.setTotalPrice(cartItem.getUnitPrice().multiply(BigDecimal.valueOf(quantity)));
             cartItemRepository.save(cartItem);
         }
 
@@ -84,7 +88,7 @@ public class CartService {
 
     public void removeItemFromCart(Long customerId, Long productId) {
         ShoppingCart cart = cartRepository.findByCustomerId(customerId)
-                .orElseThrow(() -> new RuntimeException("Cart not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Cart not found"));
 
         cartItemRepository.deleteByCartIdAndProductId(cart.getId(), productId);
         log.info("Removed item {} from cart for customer {}", productId, customerId);
@@ -92,7 +96,7 @@ public class CartService {
 
     public void clearCart(Long customerId) {
         ShoppingCart cart = cartRepository.findByCustomerId(customerId)
-                .orElseThrow(() -> new RuntimeException("Cart not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Cart not found"));
 
         cartItemRepository.deleteAllByCartId(cart.getId());
         log.info("Cleared cart for customer {}", customerId);

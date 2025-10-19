@@ -4,6 +4,33 @@
   padding: 20px;
 }
 
+.guest-notice {
+  background: linear-gradient(135deg, #fef3c7, #fcd34d);
+  border: 1px solid #f59e0b;
+  border-radius: 8px;
+  padding: 16px;
+  margin-bottom: 24px;
+  text-align: center;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.guest-notice p {
+  margin: 0;
+  color: #92400e;
+  font-weight: 500;
+}
+
+.login-link, .register-link {
+  color: #1d4ed8;
+  text-decoration: none;
+  font-weight: 600;
+  margin: 0 4px;
+}
+
+.login-link:hover, .register-link:hover {
+  text-decoration: underline;
+}
+
 .products-header {
   display: flex;
   justify-content: space-between;

@@ -19,8 +19,8 @@ public interface CategoryRepository extends JpaRepository<Category, Long> {
     Boolean existsByCategoryName(String categoryName);
 
     // Search categories by name or description (case insensitive)
-    List<Category> findByCategoryNameContainingIgnoreCaseOrCategoryDescriptionContainingIgnoreCase(
-            String categoryName, String categoryDescription);
+    List<Category> findByCategoryNameContainingIgnoreCaseOrDescriptionContainingIgnoreCase(
+            String categoryName, String description);
 
     // Find category by name containing (partial match)
     List<Category> findByCategoryNameContainingIgnoreCase(String categoryName);
@@ -43,6 +43,6 @@ public interface CategoryRepository extends JpaRepository<Category, Long> {
     // Custom search query for comprehensive search
     @Query("SELECT c FROM Category c WHERE " +
             "LOWER(c.categoryName) LIKE LOWER(CONCAT('%', :keyword, '%')) OR " +
-            "LOWER(c.categoryDescription) LIKE LOWER(CONCAT('%', :keyword, '%'))")
+            "LOWER(c.description) LIKE LOWER(CONCAT('%', :keyword, '%'))")
     List<Category> searchCategories(@Param("keyword") String keyword);
 }

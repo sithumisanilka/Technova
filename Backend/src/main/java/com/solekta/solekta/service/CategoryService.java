@@ -66,7 +66,7 @@ public class CategoryService {
 
         // Update fields
         category.setCategoryName(categoryDetails.getCategoryName());
-        category.setCategoryDescription(categoryDetails.getCategoryDescription());
+        category.setDescription(categoryDetails.getDescription());
 
         return categoryRepository.save(category);
     }

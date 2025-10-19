@@ -2,7 +2,7 @@ package com.solekta.solekta.service;
 
 import com.solekta.solekta.dto.*;
 import com.solekta.solekta.model.*;
-import com.solekta.solekta.repositories.OrderRepository;
+import com.solekta.solekta.repository.OrderRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;

@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { useSearchParams } from 'react-router-dom';
+import { useSearchParams, Link } from 'react-router-dom';
+import { useAuth } from '../context/AuthContext';
 import { useCart } from '../context/CartContext';
 import { productService } from '../services/ProductService';
 import './Products.css';
@@ -17,6 +18,7 @@ const Products = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [showFilters, setShowFilters] = useState(false);
+  const { isAuthenticated } = useAuth();
   const { addItem } = useCart();
 
   const searchQuery = searchParams.get('search') || '';
@@ -97,6 +99,10 @@ const Products = () => {
   });
 
   const handleAddToCart = (product) => {
+    if (!isAuthenticated()) {
+      alert("Please log in to add items to your cart!");
+      return;
+    }
     addItem(product, 1);
   };
 
@@ -129,6 +135,18 @@ const Products = () => {
 
   return (
     <div className="products-container">
+      {!isAuthenticated() && (
+        <div className="guest-notice">
+          <p>
+            🛍️ You're browsing as a guest. 
+            <Link to="/login" className="login-link"> Log in </Link> 
+            or 
+            <Link to="/register" className="register-link"> sign up </Link> 
+            to add items to your cart and make purchases!
+          </p>
+        </div>
+      )}
+      
       <div className="products-header">
         <h1 className="products-title">Products</h1>
         
@@ -282,8 +300,9 @@ const Products = () => {
                     <button
                       onClick={() => handleAddToCart(product)}
                       className="btn btn-primary add-to-cart-btn"
+                      title={!isAuthenticated() ? "Please log in to add to cart" : "Add to cart"}
                     >
-                      Add to Cart
+                      {isAuthenticated() ? "Add to Cart" : "Login to Add to Cart"}
                     </button>
                   </div>
                 </div>

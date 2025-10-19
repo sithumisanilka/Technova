@@ -1,5 +1,6 @@
 import React, { createContext, useContext, useReducer, useEffect } from "react";
 import { cartService } from '../services/cartService';
+import { useAuth } from './AuthContext';
 
 const CartContext = createContext(undefined);
 
@@ -133,58 +134,88 @@ const initialState = {
 
 export const CartProvider = ({ children }) => {
   const [state, dispatch] = useReducer(cartReducer, initialState);
+  const { user, isAuthenticated } = useAuth();
 
-  // For now, using a dummy user ID. In a real app, this would come from authentication
-  const userId = 1; // This should be replaced with actual user authentication
+  // Get user ID from authentication context
+  const userId = user?.id;
 
-  // Load cart from backend on initialization
+  // Load cart from backend on initialization (only if authenticated)
   useEffect(() => {
     const loadCart = async () => {
-      try {
-        // Try to load from backend first
-        const serverCartItems = await cartService.getCartItems(userId);
-        if (serverCartItems && serverCartItems.length > 0) {
-          dispatch({ type: "LOAD_CART", payload: serverCartItems });
-        } else {
-          // Fallback to localStorage if backend is not available or empty
-          const savedCart = localStorage.getItem("cart");
-          if (savedCart) {
-            try {
-              const cartItems = JSON.parse(savedCart);
-              dispatch({ type: "LOAD_CART", payload: cartItems });
-              // Sync local cart to server
-              if (cartItems.length > 0) {
-                await cartService.syncCart(userId, cartItems);
-              }
-            } catch (error) {
-              console.error("Error loading cart from localStorage:", error);
-            }
-          }
-        }
-      } catch (error) {
-        console.error("Error loading cart from server:", error);
-        // Fallback to localStorage
-        const savedCart = localStorage.getItem("cart");
+      if (!isAuthenticated() || !userId) {
+        // If not authenticated, clear cart and load from localStorage as guest
+        const savedCart = localStorage.getItem("guestCart");
         if (savedCart) {
           try {
             const cartItems = JSON.parse(savedCart);
             dispatch({ type: "LOAD_CART", payload: cartItems });
+          } catch (error) {
+            console.error("Error loading guest cart from localStorage:", error);
+          }
+        } else {
+          dispatch({ type: "CLEAR_CART" });
+        }
+        return;
+      }
+
+      try {
+        // Try to load from backend first for authenticated users
+        const serverCartItems = await cartService.getCartItems(userId);
+        if (serverCartItems && serverCartItems.length > 0) {
+          dispatch({ type: "LOAD_CART", payload: serverCartItems });
+        } else {
+          // Check if there's a guest cart to migrate
+          const guestCart = localStorage.getItem("guestCart");
+          if (guestCart) {
+            try {
+              const cartItems = JSON.parse(guestCart);
+              dispatch({ type: "LOAD_CART", payload: cartItems });
+              // Sync guest cart to server and remove guest cart
+              if (cartItems.length > 0) {
+                await cartService.syncCart(userId, cartItems);
+                localStorage.removeItem("guestCart");
+              }
+            } catch (error) {
+              console.error("Error migrating guest cart:", error);
+            }
+          } else {
+            dispatch({ type: "CLEAR_CART" });
+          }
+        }
+      } catch (error) {
+        console.error("Error loading cart from server:", error);
+        // Fallback to guest cart
+        const guestCart = localStorage.getItem("guestCart");
+        if (guestCart) {
+          try {
+            const cartItems = JSON.parse(guestCart);
+            dispatch({ type: "LOAD_CART", payload: cartItems });
           } catch (localError) {
-            console.error("Error loading cart from localStorage:", localError);
+            console.error("Error loading guest cart:", localError);
           }
         }
       }
     };
 
     loadCart();
-  }, [userId]);
+  }, [isAuthenticated, userId]);
 
   // Save cart to localStorage whenever it changes (as backup)
   useEffect(() => {
-    localStorage.setItem("cart", JSON.stringify(state.items));
-  }, [state.items]);
+    if (isAuthenticated()) {
+      localStorage.setItem("cart", JSON.stringify(state.items));
+    } else {
+      localStorage.setItem("guestCart", JSON.stringify(state.items));
+    }
+  }, [state.items, isAuthenticated]);
 
   const addItem = async (product, quantity = 1) => {
+    if (!isAuthenticated()) {
+      // Show message that login is required for cart operations
+      alert("Please log in to add items to your cart!");
+      return false;
+    }
+
     try {
       // Update local state first for immediate UI feedback
       dispatch({ type: "ADD_ITEM", payload: { product, quantity } });
@@ -193,14 +224,21 @@ export const CartProvider = ({ children }) => {
       await cartService.addToCart(userId, product.productId, quantity);
       
       console.log(`Added ${product.productName} to cart`);
+      return true;
     } catch (error) {
       console.error("Failed to add item to cart:", error);
       // Optionally revert the local change if backend fails
       // For now, we'll keep the local change as fallback
+      return false;
     }
   };
 
   const removeItem = async (productId) => {
+    if (!isAuthenticated()) {
+      alert("Please log in to manage your cart!");
+      return false;
+    }
+
     try {
       // Update local state first
       dispatch({ type: "REMOVE_ITEM", payload: productId.toString() });
@@ -209,9 +247,11 @@ export const CartProvider = ({ children }) => {
       await cartService.removeFromCart(userId, productId);
       
       console.log("Item removed from cart");
+      return true;
     } catch (error) {
       console.error("Failed to remove item from cart:", error);
       // Optionally revert the local change if backend fails
+      return false;
     }
   };
 
