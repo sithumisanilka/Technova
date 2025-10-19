@@ -81,4 +81,9 @@ public class CategoryController {
     public List<Category> searchCategories(@RequestParam String keyword) {
         return categoryService.searchCategories(keyword);
     }
+
+    @GetMapping("/test")
+    public ResponseEntity<String> testEndpoint() {
+        return ResponseEntity.ok("Category API is working!");
+    }
 }

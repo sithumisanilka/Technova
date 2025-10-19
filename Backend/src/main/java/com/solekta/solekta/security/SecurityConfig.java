@@ -45,6 +45,7 @@ public class SecurityConfig {
                                 "/api/auth/forgot-password",
                                 "/api/products/**",
                                 "/api/categories/**",
+                                "/api/services/**",
                                 "/api/orders/with-receipt" // Temporarily allow for testing
                         ).permitAll()
 

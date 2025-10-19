@@ -202,3 +202,39 @@
   box-shadow: 0 4px 8px rgba(220, 53, 69, 0.4) !important;
   background: linear-gradient(135deg, #c82333, #bd2130) !important;
 }
+
+/* Auth Button Styling */
+.nav-link[style*="background: none"] {
+  background: none !important;
+  border: none !important;
+  cursor: pointer !important;
+  font-family: inherit !important;
+  font-size: inherit !important;
+  color: #374151 !important;
+  text-decoration: none !important;
+  font-weight: 500 !important;
+  transition: color 0.2s !important;
+  padding: 0.5rem 0 !important;
+}
+
+.nav-link[style*="background: none"]:hover {
+  color: #3b82f6 !important;
+}
+
+.register-btn[style*="background: none"] {
+  background: linear-gradient(135deg, #3b82f6, #1d4ed8) !important;
+  color: white !important;
+  padding: 8px 16px !important;
+  border-radius: 6px !important;
+  font-weight: 600 !important;
+  box-shadow: 0 2px 4px rgba(59, 130, 246, 0.3) !important;
+  transition: all 0.3s ease !important;
+  border: none !important;
+}
+
+.register-btn[style*="background: none"]:hover {
+  transform: translateY(-1px) !important;
+  box-shadow: 0 4px 8px rgba(59, 130, 246, 0.4) !important;
+  background: linear-gradient(135deg, #1d4ed8, #1e40af) !important;
+  color: white !important;
+}

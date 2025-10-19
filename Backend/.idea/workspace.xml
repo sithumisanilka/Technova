@@ -5,106 +5,35 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="b5c8b595-70ec-49b0-9f2d-9f5f5f00540a" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/src/main/java/com/solekta/solekta/dto/AddCartItemRequest.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/com/solekta/solekta/dto/SyncCartRequest.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/com/solekta/solekta/dto/UpdateCartItemRequest.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/com/solekta/solekta/model/RentalService.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/target/classes/com/solekta/solekta/controller/AppointmentController.class" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/target/classes/com/solekta/solekta/controller/ServiceController.class" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/target/classes/com/solekta/solekta/dto/AddCartItemRequest.class" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/target/classes/com/solekta/solekta/dto/SyncCartRequest.class" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/target/classes/com/solekta/solekta/dto/UpdateCartItemRequest.class" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/target/classes/com/solekta/solekta/enums/AppointmentStatus.class" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/target/classes/com/solekta/solekta/model/Appointment$Builder.class" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/target/classes/com/solekta/solekta/model/Appointment.class" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/target/classes/com/solekta/solekta/model/Order$PaymentMethod.class" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/target/classes/com/solekta/solekta/model/Service.class" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/target/classes/com/solekta/solekta/repository/AppointmentRepository.class" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/target/classes/com/solekta/solekta/repository/ServiceRepository.class" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/target/classes/com/solekta/solekta/service/AppointmentService.class" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/target/classes/com/solekta/solekta/service/ServiceService.class" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../frontend/src/pages/ProductDetails.css" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../frontend/src/pages/ProductDetails.js" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/solekta/solekta/controller/AdminController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/solekta/solekta/controller/AdminController.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/com/solekta/solekta/controller/AuthController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/solekta/solekta/controller/AuthController.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/solekta/solekta/controller/CartController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/solekta/solekta/controller/CartController.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/solekta/solekta/controller/OrderController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/solekta/solekta/controller/OrderController.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/solekta/solekta/controller/ProductController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/solekta/solekta/controller/ProductController.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/solekta/solekta/controller/ServiceController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/solekta/solekta/controller/ServiceController.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/solekta/solekta/controller/UserController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/solekta/solekta/controller/UserController.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/solekta/solekta/dto/CartItemDTO.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/solekta/solekta/dto/CartItemDTO.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/solekta/solekta/dto/CheckoutRequest.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/solekta/solekta/dto/CheckoutRequest.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/solekta/solekta/model/Appointment.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/solekta/solekta/model/Appointment.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/solekta/solekta/model/CartItem.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/solekta/solekta/model/CartItem.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/solekta/solekta/controller/CategoryController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/solekta/solekta/controller/CategoryController.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/com/solekta/solekta/model/Category.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/solekta/solekta/model/Category.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/solekta/solekta/model/Order.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/solekta/solekta/model/Order.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/solekta/solekta/model/OrderItem.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/solekta/solekta/model/OrderItem.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/solekta/solekta/model/PaymentTransaction.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/solekta/solekta/model/PaymentTransaction.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/com/solekta/solekta/model/Product.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/solekta/solekta/model/Product.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/solekta/solekta/model/Profile.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/solekta/solekta/model/Profile.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/solekta/solekta/model/Role.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/solekta/solekta/enums/Role.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/solekta/solekta/model/Service.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/solekta/solekta/model/ShoppingCart.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/solekta/solekta/model/ShoppingCart.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/solekta/solekta/model/User.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/solekta/solekta/model/User.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/solekta/solekta/repositories/CategoryRepository.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/solekta/solekta/repository/CartItemRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/solekta/solekta/repository/CartItemRepository.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/solekta/solekta/repository/ServiceRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/solekta/solekta/repository/ServiceRepository.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/solekta/solekta/repository/CategoryRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/solekta/solekta/repository/CategoryRepository.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/solekta/solekta/repository/ProductRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/solekta/solekta/repository/ProductRepository.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/solekta/solekta/repository/UserRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/solekta/solekta/repository/UserRepository.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/com/solekta/solekta/security/SecurityConfig.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/solekta/solekta/security/SecurityConfig.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/solekta/solekta/service/CartService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/solekta/solekta/service/CartService.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/solekta/solekta/service/OrderService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/solekta/solekta/service/OrderService.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/solekta/solekta/service/ProductService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/solekta/solekta/service/ProductService.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/solekta/solekta/service/ServiceService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/solekta/solekta/service/ServiceService.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/com/solekta/solekta/controller/AdminController.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/solekta/solekta/controller/AdminController.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/com/solekta/solekta/controller/AuthController.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/solekta/solekta/controller/AuthController.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/com/solekta/solekta/controller/CartController.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/solekta/solekta/controller/CartController.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/com/solekta/solekta/controller/OrderController.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/solekta/solekta/controller/OrderController.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/com/solekta/solekta/controller/ProductController.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/solekta/solekta/controller/ProductController.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/com/solekta/solekta/controller/UserController.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/solekta/solekta/controller/UserController.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/com/solekta/solekta/dto/CartItemDTO.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/solekta/solekta/dto/CartItemDTO.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/com/solekta/solekta/dto/CheckoutRequest.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/solekta/solekta/dto/CheckoutRequest.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/com/solekta/solekta/model/CartItem$CartItemBuilder.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/solekta/solekta/model/CartItem$CartItemBuilder.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/com/solekta/solekta/model/CartItem.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/solekta/solekta/model/CartItem.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/solekta/solekta/service/CategoryService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/solekta/solekta/service/CategoryService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/resources/application.properties" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/application.properties" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/application.properties" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/application.properties" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/solekta/solekta/controller/CategoryController.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/solekta/solekta/controller/CategoryController.class" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/target/classes/com/solekta/solekta/model/Category$CategoryBuilder.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/solekta/solekta/model/Category$CategoryBuilder.class" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/target/classes/com/solekta/solekta/model/Category.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/solekta/solekta/model/Category.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/com/solekta/solekta/model/Order$OrderBuilder.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/solekta/solekta/model/Order$OrderBuilder.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/com/solekta/solekta/model/Order$OrderStatus.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/solekta/solekta/model/Order$OrderStatus.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/com/solekta/solekta/model/Order$PaymentStatus.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/solekta/solekta/model/Order$PaymentStatus.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/com/solekta/solekta/model/Order.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/solekta/solekta/model/Order.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/com/solekta/solekta/model/OrderItem$OrderItemBuilder.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/solekta/solekta/model/OrderItem$OrderItemBuilder.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/com/solekta/solekta/model/OrderItem.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/solekta/solekta/model/OrderItem.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/com/solekta/solekta/model/PaymentTransaction$PaymentMethod.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/solekta/solekta/model/PaymentTransaction$PaymentMethod.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/com/solekta/solekta/model/PaymentTransaction$PaymentStatus.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/solekta/solekta/model/PaymentTransaction$PaymentStatus.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/com/solekta/solekta/model/PaymentTransaction$PaymentTransactionBuilder.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/solekta/solekta/model/PaymentTransaction$PaymentTransactionBuilder.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/com/solekta/solekta/model/PaymentTransaction$TransactionStatus.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/solekta/solekta/model/PaymentTransaction$TransactionStatus.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/com/solekta/solekta/model/PaymentTransaction$TransactionType.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/solekta/solekta/model/PaymentTransaction$TransactionType.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/com/solekta/solekta/model/PaymentTransaction.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/solekta/solekta/model/PaymentTransaction.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/com/solekta/solekta/model/Product$ProductBuilder.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/solekta/solekta/model/Product$ProductBuilder.class" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/target/classes/com/solekta/solekta/model/Product.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/solekta/solekta/model/Product.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/com/solekta/solekta/model/Profile.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/solekta/solekta/model/Profile.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/com/solekta/solekta/model/Role.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/solekta/solekta/enums/Role.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/com/solekta/solekta/model/ShoppingCart$ShoppingCartBuilder.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/solekta/solekta/model/ShoppingCart$ShoppingCartBuilder.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/com/solekta/solekta/model/ShoppingCart.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/solekta/solekta/model/ShoppingCart.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/com/solekta/solekta/model/User$UserBuilder.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/solekta/solekta/model/User$UserBuilder.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/com/solekta/solekta/model/User.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/solekta/solekta/model/User.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/com/solekta/solekta/repository/CartItemRepository.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/solekta/solekta/repository/CartItemRepository.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/com/solekta/solekta/security/CustomUserDetails.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/solekta/solekta/security/CustomUserDetails.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/solekta/solekta/repository/CategoryRepository.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/solekta/solekta/repository/CategoryRepository.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/solekta/solekta/repository/ProductRepository.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/solekta/solekta/repository/ProductRepository.class" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/target/classes/com/solekta/solekta/security/SecurityConfig$1.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/solekta/solekta/security/SecurityConfig$1.class" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/target/classes/com/solekta/solekta/security/SecurityConfig.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/solekta/solekta/security/SecurityConfig.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/com/solekta/solekta/service/CartService.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/solekta/solekta/service/CartService.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/com/solekta/solekta/service/OrderService.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/solekta/solekta/service/OrderService.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/com/solekta/solekta/service/ProductService.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/solekta/solekta/service/ProductService.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/solekta/solekta/service/CategoryService.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/solekta/solekta/service/CategoryService.class" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/../frontend/src/App.js" beforeDir="false" afterPath="$PROJECT_DIR$/../frontend/src/App.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../frontend/src/components/ProductList.css" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../frontend/src/components/ProductList.js" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/../frontend/src/components/layout/Header.js" beforeDir="false" afterPath="$PROJECT_DIR$/../frontend/src/components/layout/Header.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../frontend/src/context/CartContext.js" beforeDir="false" afterPath="$PROJECT_DIR$/../frontend/src/context/CartContext.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../frontend/src/pages/Cart.css" beforeDir="false" afterPath="$PROJECT_DIR$/../frontend/src/pages/Cart.css" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../frontend/src/pages/Cart.js" beforeDir="false" afterPath="$PROJECT_DIR$/../frontend/src/pages/Cart.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../frontend/src/pages/Checkout.css" beforeDir="false" afterPath="$PROJECT_DIR$/../frontend/src/pages/Checkout.css" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../frontend/src/pages/Checkout.js" beforeDir="false" afterPath="$PROJECT_DIR$/../frontend/src/pages/Checkout.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../frontend/src/pages/Products.css" beforeDir="false" afterPath="$PROJECT_DIR$/../frontend/src/pages/Products.css" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../frontend/src/pages/Cart_old.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../frontend/src/pages/ProductDetails.js" beforeDir="false" afterPath="$PROJECT_DIR$/../frontend/src/pages/ProductDetails.js" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/../frontend/src/pages/Products.js" beforeDir="false" afterPath="$PROJECT_DIR$/../frontend/src/pages/Products.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../frontend/src/services/cartService.js" beforeDir="false" afterPath="$PROJECT_DIR$/../frontend/src/services/cartService.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../frontend/src/pages/Services.js" beforeDir="false" afterPath="$PROJECT_DIR$/../frontend/src/pages/Services.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../frontend/src/services/serviceService.js" beforeDir="false" afterPath="$PROJECT_DIR$/../frontend/src/services/serviceService.js" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />

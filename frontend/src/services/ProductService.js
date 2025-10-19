@@ -34,6 +34,41 @@ export const productService = {
     }
   },
 
+  // Create product with file upload
+  createProductWithImage: async (productData, imageFile = null) => {
+    try {
+      const formData = new FormData();
+      
+      // Append all product fields
+      formData.append('productName', productData.productName);
+      formData.append('productDescription', productData.productDescription || '');
+      formData.append('laptopSpec', productData.laptopSpec || '');
+      formData.append('quantity', productData.quantity || 0);
+      formData.append('isAvailable', productData.isAvailable || false);
+      formData.append('price', productData.price || 0);
+      formData.append('brand', productData.brand || '');
+      formData.append('imageUrls', productData.imageUrls || '');
+      
+      if (productData.category?.id) {
+        formData.append('categoryId', productData.category.id);
+      }
+      
+      if (imageFile) {
+        formData.append('imageFile', imageFile);
+      }
+
+      const response = await api.post('/products/with-image', formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      });
+      return response.data;
+    } catch (error) {
+      console.error('Error creating product with image:', error);
+      throw error;
+    }
+  },
+
   // Update an existing product (matches backend endpoint)
   updateProduct: async (id, productData) => {
     try {
@@ -52,6 +87,19 @@ export const productService = {
     } catch (error) {
       console.error(`Error deleting product ${id}:`, error);
       throw error;
+    }
+  },
+
+  // Get product image
+  getProductImage: async (id) => {
+    try {
+      const response = await api.get(`/products/${id}/image`, {
+        responseType: 'blob'
+      });
+      return URL.createObjectURL(response.data);
+    } catch (error) {
+      console.error(`Error fetching product image ${id}:`, error);
+      return null;
     }
   },
 

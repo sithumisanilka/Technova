@@ -9,8 +9,7 @@ function Register() {
     password: "",
     firstName: "",
     lastName: "",
-    phoneNumber: "",
-    role: "USER", // default role
+    phoneNumber: ""
   });
   const [message, setMessage] = useState("");
   const [error, setError] = useState("");
@@ -80,12 +79,7 @@ function Register() {
           onChange={handleChange}
         /><br />
 
-        {/* Role Selection */}
-        <label>Role:</label><br />
-        <select name="role" value={formData.role} onChange={handleChange}>
-          <option value="USER">User</option>
-          <option value="ADMIN">Admin</option>
-        </select><br /><br />
+
 
         <button type="submit" disabled={loading}>
           {loading ? "Registering..." : "Register"}

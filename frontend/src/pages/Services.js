@@ -4,6 +4,54 @@ import { useCart } from '../context/CartContext';
 import { useAuth } from '../context/AuthContext';
 import './Services.css';
 
+// Component to handle service images with proper error handling
+const ServiceImage = ({ serviceId, serviceName }) => {
+  const [imageSrc, setImageSrc] = useState(null);
+  const [hasError, setHasError] = useState(false);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const loadImage = async () => {
+      try {
+        // First try to load the image to check if it exists
+        const response = await fetch(`http://localhost:8081/api/services/${serviceId}/image`);
+        if (response.ok) {
+          setImageSrc(`http://localhost:8081/api/services/${serviceId}/image`);
+        } else {
+          setHasError(true);
+        }
+      } catch (error) {
+        setHasError(true);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    if (serviceId) {
+      loadImage();
+    } else {
+      setLoading(false);
+      setHasError(true);
+    }
+  }, [serviceId]);
+
+  if (loading) {
+    return <div className="service-image-placeholder">⏳</div>;
+  }
+
+  if (hasError || !imageSrc) {
+    return <div className="service-image-placeholder">🛠️</div>;
+  }
+
+  return (
+    <img 
+      src={imageSrc} 
+      alt={serviceName}
+      onError={() => setHasError(true)}
+    />
+  );
+};
+
 const Services = () => {
   const [services, setServices] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -178,17 +226,9 @@ const ServiceCard = ({ service, onAddToCart }) => {
 
   return (
     <div className="service-card">
-      {service.imageData && (
-        <div className="service-image">
-          <img 
-            src={serviceService.getServiceImageUrl(service.serviceId)} 
-            alt={service.serviceName}
-            onError={(e) => {
-              e.target.style.display = 'none';
-            }}
-          />
-        </div>
-      )}
+      <div className="service-image">
+        <ServiceImage serviceId={service.serviceId} serviceName={service.serviceName} />
+      </div>
       
       <div className="service-details">
         <h3>{service.serviceName}</h3>

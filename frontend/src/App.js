@@ -9,8 +9,7 @@ import ProductDetails from './pages/ProductDetails';
 import Cart from './pages/Cart';
 import Checkout from './pages/Checkout';
 import NotFound from './pages/NotFound';
-import Login from './components/Login';
-import Register from './components/Register';
+
 import Profile from './components/Profile';
 import UpdateProfile from './components/UpdateProfile';
 import ForgotPassword from './components/ForgotPassword';
@@ -31,8 +30,6 @@ function App() {
               <Route path="/products" element={<Products />} />
               <Route path="/services" element={<Services />} />
               <Route path="/product/:id" element={<ProductDetails />} />
-              <Route path="/login" element={<Login />} />
-              <Route path="/register" element={<Register />} />
               <Route path="/forgot-password" element={<ForgotPassword />} />
               
               {/* Protected Routes - Require Authentication */}

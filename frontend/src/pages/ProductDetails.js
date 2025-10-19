@@ -2,8 +2,75 @@ import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { useCart } from '../context/CartContext';
+import { productService } from '../services/ProductService';
 import api from '../api/axiosConfig';
 import './ProductDetails.css';
+
+// Component to handle product images from database
+const ProductDetailImage = ({ productId, productName }) => {
+  const [imageSrc, setImageSrc] = useState(null);
+  const [hasError, setHasError] = useState(false);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const loadImage = async () => {
+      try {
+        const imageUrl = await productService.getProductImage(productId);
+        if (imageUrl) {
+          setImageSrc(imageUrl);
+        } else {
+          setHasError(true);
+        }
+      } catch (error) {
+        console.log('No database image found for product:', productId);
+        setHasError(true);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    if (productId) {
+      loadImage();
+    } else {
+      setLoading(false);
+      setHasError(true);
+    }
+
+  }, [productId]);
+
+  useEffect(() => {
+    return () => {
+      if (imageSrc && imageSrc.startsWith('blob:')) {
+        URL.revokeObjectURL(imageSrc);
+      }
+    };
+  }, [imageSrc]);
+
+  if (loading) {
+    return (
+      <div className="image-loading">
+        <span>⏳ Loading image...</span>
+      </div>
+    );
+  }
+
+  if (hasError || !imageSrc) {
+    return (
+      <div className="no-image">
+        <span>📱</span>
+        <p>No Image Available</p>
+      </div>
+    );
+  }
+
+  return (
+    <img 
+      src={imageSrc} 
+      alt={productName}
+      onError={() => setHasError(true)}
+    />
+  );
+};
 
 function ProductDetails() {
   const { id } = useParams();
@@ -114,17 +181,7 @@ function ProductDetails() {
         <div className="product-content">
           <div className="product-image-section">
             <div className="product-image">
-              {product.imageUrls ? (
-                <img 
-                  src={product.imageUrls} 
-                  alt={product.productName}
-                />
-              ) : (
-                <div className="no-image">
-                  <span>📱</span>
-                  <p>No Image Available</p>
-                </div>
-              )}
+              <ProductDetailImage productId={product.productId} productName={product.productName} />
             </div>
           </div>
 

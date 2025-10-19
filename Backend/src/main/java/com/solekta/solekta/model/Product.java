@@ -38,7 +38,7 @@ public class Product {
     @Column(nullable = false)
     private String brand;
 
-    @Column(name = "image_urls", columnDefinition = "TEXT")
+    @Column(name = "image_urls", columnDefinition = "LONGTEXT")
     private String imageUrls;
 
     // Product Image Storage (as binary data)

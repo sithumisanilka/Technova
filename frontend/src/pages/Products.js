@@ -5,6 +5,65 @@ import { useCart } from '../context/CartContext';
 import { productService } from '../services/ProductService';
 import './Products.css';
 
+// Component to handle product images from database
+const ProductImage = ({ productId, productName }) => {
+  const [imageSrc, setImageSrc] = useState(null);
+  const [hasError, setHasError] = useState(false);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const loadImage = async () => {
+      try {
+        // Try to get image from database first
+        const imageUrl = await productService.getProductImage(productId);
+        if (imageUrl) {
+          setImageSrc(imageUrl);
+        } else {
+          setHasError(true);
+        }
+      } catch (error) {
+        console.log('No database image found for product:', productId);
+        setHasError(true);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    if (productId) {
+      loadImage();
+    } else {
+      setLoading(false);
+      setHasError(true);
+    }
+
+  }, [productId]);
+
+  // Cleanup effect for revoking blob URLs
+  useEffect(() => {
+    return () => {
+      if (imageSrc && imageSrc.startsWith('blob:')) {
+        URL.revokeObjectURL(imageSrc);
+      }
+    };
+  }, [imageSrc]);
+
+  if (loading) {
+    return <div className="product-image-placeholder">⏳</div>;
+  }
+
+  if (hasError || !imageSrc) {
+    return <div className="product-image-placeholder">📦</div>;
+  }
+
+  return (
+    <img 
+      src={imageSrc} 
+      alt={productName}
+      onError={() => setHasError(true)}
+    />
+  );
+};
+
 const brands = ['Apple', 'Dell', 'HP', 'Lenovo', 'ASUS', 'Microsoft'];
 const categories = ['Gaming', 'Business', 'Premium', 'Budget'];
 
@@ -281,11 +340,7 @@ const Products = () => {
                 style={{ cursor: 'pointer' }}
               >
                 <div className="product-image">
-                  {product.imageUrl ? (
-                    <img src={product.imageUrl} alt={product.productName} />
-                  ) : (
-                    <div className="no-image">📦</div>
-                  )}
+                  <ProductImage productId={product.productId} productName={product.productName} />
                 </div>
                 
                 <div className="product-info">

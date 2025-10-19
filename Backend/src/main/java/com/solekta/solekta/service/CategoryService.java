@@ -48,7 +48,7 @@ public class CategoryService {
 
     public Category saveCategory(Category category) {
         // Validate unique category name before saving
-        if (category.getCategoryId() == null && categoryRepository.existsByCategoryName(category.getCategoryName())) {
+        if (category.getId() == null && categoryRepository.existsByCategoryName(category.getCategoryName())) {
             throw new RuntimeException("Category with name '" + category.getCategoryName() + "' already exists");
         }
         return categoryRepository.save(category);

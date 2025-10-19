@@ -26,7 +26,7 @@ public interface CategoryRepository extends JpaRepository<Category, Long> {
     List<Category> findByCategoryNameContainingIgnoreCase(String categoryName);
 
     // Get category with its products (eager fetching)
-    @Query("SELECT c FROM Category c LEFT JOIN FETCH c.products WHERE c.categoryId = :categoryId")
+    @Query("SELECT c FROM Category c LEFT JOIN FETCH c.products WHERE c.id = :categoryId")
     Optional<Category> findByIdWithProducts(@Param("categoryId") Long categoryId);
 
     // Get categories that have products

@@ -2,11 +2,14 @@ import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import { useCart } from '../../context/CartContext';
+import AuthModal from '../AuthModal';
 import './Header.css';
 
 const Header = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
+  const [authModalMode, setAuthModalMode] = useState('login');
   const { user, isAuthenticated, logout, isAdmin } = useAuth();
   const { itemCount } = useCart();
   const navigate = useNavigate();
@@ -27,6 +30,16 @@ const Header = () => {
     logout();
     navigate('/');
     setIsMobileMenuOpen(false);
+  };
+
+  const openAuthModal = (mode) => {
+    setAuthModalMode(mode);
+    setIsAuthModalOpen(true);
+    setIsMobileMenuOpen(false);
+  };
+
+  const closeAuthModal = () => {
+    setIsAuthModalOpen(false);
   };
 
   return (
@@ -80,12 +93,20 @@ const Header = () => {
               </>
             ) : (
               <>
-                <Link to="/login" className="nav-link" onClick={() => setIsMobileMenuOpen(false)}>
+                <button 
+                  className="nav-link" 
+                  onClick={() => openAuthModal('login')}
+                  style={{ background: 'none', border: 'none', cursor: 'pointer' }}
+                >
                   Login
-                </Link>
-                <Link to="/register" className="nav-link register-btn" onClick={() => setIsMobileMenuOpen(false)}>
+                </button>
+                <button 
+                  className="nav-link register-btn" 
+                  onClick={() => openAuthModal('register')}
+                  style={{ background: 'none', border: 'none', cursor: 'pointer' }}
+                >
                   Register
-                </Link>
+                </button>
               </>
             )}
           </nav>
@@ -100,6 +121,13 @@ const Header = () => {
           </button>
         </div>
       </div>
+
+      {/* Auth Modal */}
+      <AuthModal 
+        isOpen={isAuthModalOpen} 
+        onClose={closeAuthModal} 
+        initialMode={authModalMode} 
+      />
     </header>
   );
 };

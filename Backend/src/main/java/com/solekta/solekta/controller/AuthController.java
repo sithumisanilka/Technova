@@ -53,12 +53,7 @@ public class AuthController {
         System.out.println("LastName: '" + request.getLastName() + "'");
         System.out.println("Phone: " + request.getPhoneNumber());
         
-        // Determine role
-        String userRole = (request.getRole() == null || request.getRole().isEmpty())
-                ? "USER"
-                : request.getRole().toUpperCase();
-
-        // 1️⃣ Create and save user
+        // 1️⃣ Create and save user with default USER role
         User user = User.builder()
                 .username(request.getUsername())
                 .email(request.getEmail())
@@ -68,7 +63,7 @@ public class AuthController {
                 .lastName(request.getLastName() != null && !request.getLastName().trim().isEmpty() 
                          ? request.getLastName().trim() : "User")
                 .phone(request.getPhoneNumber())
-                .role(Role.valueOf(userRole))
+                .role(Role.USER)  // Always default to USER role
                 .build();
         User savedUser = userRepository.save(user);
 
@@ -81,7 +76,7 @@ public class AuthController {
                 .build();
         profileService.createProfile(profile);
 
-        return "User registered successfully with role: " + userRole + " and profile!";
+        return "User registered successfully with role: USER and profile!";
     }
 
 
