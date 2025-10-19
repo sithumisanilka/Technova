@@ -12,8 +12,9 @@ import java.util.List;
 
 @Entity
 @Table(name = "orders")
-@Data @Builder @NoArgsConstructor @AllArgsConstructor
-
+@Getter @Setter @Builder @NoArgsConstructor @AllArgsConstructor
+@ToString(exclude = {"orderItems", "payment"})
+@EqualsAndHashCode(exclude = {"orderItems", "payment"})
 public class Order {
 
     @Id
@@ -65,6 +66,22 @@ public class Order {
     @Column(nullable = false)
     private String shippingPhone;
 
+    // Payment Information
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    @Builder.Default
+    private PaymentMethod paymentMethod = PaymentMethod.BANK_TRANSFER;
+
+    // Bank Transfer Receipt (for bank transfer payments)
+    @Lob
+    @Column(columnDefinition = "LONGBLOB")
+    private byte[] bankTransferReceiptData;
+
+    @Column(length = 255)
+    private String bankTransferReceiptFileName;
+
+    @Column(length = 100)
+    private String bankTransferReceiptContentType;
 
     @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @JoinColumn(name = "payment_id")
@@ -82,6 +99,14 @@ public class Order {
     @UpdateTimestamp
     private LocalDateTime updatedAt;
 
+    // Generate order number
+    @PrePersist
+    public void generateOrderNumber() {
+        if (orderNumber == null) {
+            orderNumber = "ORD-" + System.currentTimeMillis();
+        }
+    }
+
     // Helper methods
     public void addOrderItem(OrderItem item) {
         if (orderItems == null) {
@@ -98,7 +123,6 @@ public class Order {
     }
 
     public enum OrderStatus {
-
         PENDING,
         CONFIRMED,
         PROCESSING,
@@ -106,11 +130,14 @@ public class Order {
         DELIVERED,
         CANCELLED,
         REFUNDED
+    }
 
+    public enum PaymentMethod {
+        BANK_TRANSFER,
+        CASH_ON_DELIVERY
     }
 
     public enum PaymentStatus {
-
         PENDING,
         PROCESSING,
         PAID,

@@ -4,6 +4,7 @@ import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 import lombok.*;
 import jakarta.persistence.*;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -11,8 +12,9 @@ import java.util.List;
 
 @Entity
 @Table(name = "shopping_carts")
-@Data @Builder @NoArgsConstructor @AllArgsConstructor
-
+@Getter @Setter @Builder @NoArgsConstructor @AllArgsConstructor
+@ToString(exclude = "cartItems")
+@EqualsAndHashCode(exclude = "cartItems")
 public class ShoppingCart {
 
     @Id
@@ -24,6 +26,7 @@ public class ShoppingCart {
 
     @OneToMany(mappedBy = "cart", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @Builder.Default
+    @JsonManagedReference
     private List<CartItem> cartItems = new ArrayList<>();
 
     @CreationTimestamp

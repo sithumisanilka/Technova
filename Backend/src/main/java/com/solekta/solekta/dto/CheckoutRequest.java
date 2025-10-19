@@ -1,6 +1,6 @@
 package com.solekta.solekta.dto;
 
-import com.solekta.solekta.model.PaymentTransaction;
+import com.solekta.solekta.model.Order;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.AllArgsConstructor;
@@ -33,7 +33,11 @@ public class CheckoutRequest {
     private String shippingPhone;
 
     @NotNull
-    private PaymentTransaction.PaymentMethod paymentMethod;
+    private Order.PaymentMethod paymentMethod;
+
+    // Bank Transfer Receipt Information (only required for bank transfer)
+    private String bankTransferReceiptPath;
+    private String bankTransferReceiptFileName;
 
     private String notes;
 }

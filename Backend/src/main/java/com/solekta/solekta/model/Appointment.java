@@ -2,22 +2,24 @@ package com.solekta.solekta.model;
 
 import com.solekta.solekta.enums.AppointmentStatus;
 import jakarta.persistence.*;
+import lombok.*;
+
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.LocalDateTime;
 import java.util.Objects;
 
-@Entity
+@Entity @Getter @Setter @AllArgsConstructor @NoArgsConstructor @Builder
 @Table(name = "Appointments")
 public class Appointment {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "appointment_id")
-    private Integer appointmentId;
+    private Long appointmentId;
 
     @Column(name = "service_id", nullable = false)
-    private Integer serviceId;
+    private Long serviceId;
 
     @Column(name = "user_id", nullable = false)
     private Integer userId;
@@ -49,132 +51,6 @@ public class Appointment {
 
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
-
-    // Constructors
-    public Appointment() {}
-
-    public Appointment(Integer serviceId, Integer userId, String customerName,
-                       String contactInfo, LocalDate appointmentDate, LocalTime appointmentTime) {
-        this.serviceId = serviceId;
-        this.userId = userId;
-        this.customerName = customerName;
-        this.contactInfo = contactInfo;
-        this.appointmentDate = appointmentDate;
-        this.appointmentTime = appointmentTime;
-        this.status = AppointmentStatus.PENDING;
-    }
-
-    // Full constructor
-    public Appointment(Integer serviceId, Integer userId, String customerName, String contactInfo,
-                       String device, String issueDescription, LocalDate appointmentDate,
-                       LocalTime appointmentTime, AppointmentStatus status) {
-        this.serviceId = serviceId;
-        this.userId = userId;
-        this.customerName = customerName;
-        this.contactInfo = contactInfo;
-        this.device = device;
-        this.issueDescription = issueDescription;
-        this.appointmentDate = appointmentDate;
-        this.appointmentTime = appointmentTime;
-        this.status = status != null ? status : AppointmentStatus.PENDING;
-    }
-
-    // Getters and Setters
-    public Integer getAppointmentId() {
-        return appointmentId;
-    }
-
-    public void setAppointmentId(Integer appointmentId) {
-        this.appointmentId = appointmentId;
-    }
-
-    public Integer getServiceId() {
-        return serviceId;
-    }
-
-    public void setServiceId(Integer serviceId) {
-        this.serviceId = serviceId;
-    }
-
-    public Integer getUserId() {
-        return userId;
-    }
-
-    public void setUserId(Integer userId) {
-        this.userId = userId;
-    }
-
-    public String getCustomerName() {
-        return customerName;
-    }
-
-    public void setCustomerName(String customerName) {
-        this.customerName = customerName;
-    }
-
-    public String getContactInfo() {
-        return contactInfo;
-    }
-
-    public void setContactInfo(String contactInfo) {
-        this.contactInfo = contactInfo;
-    }
-
-    public String getDevice() {
-        return device;
-    }
-
-    public void setDevice(String device) {
-        this.device = device;
-    }
-
-    public String getIssueDescription() {
-        return issueDescription;
-    }
-
-    public void setIssueDescription(String issueDescription) {
-        this.issueDescription = issueDescription;
-    }
-
-    public LocalDate getAppointmentDate() {
-        return appointmentDate;
-    }
-
-    public void setAppointmentDate(LocalDate appointmentDate) {
-        this.appointmentDate = appointmentDate;
-    }
-
-    public LocalTime getAppointmentTime() {
-        return appointmentTime;
-    }
-
-    public void setAppointmentTime(LocalTime appointmentTime) {
-        this.appointmentTime = appointmentTime;
-    }
-
-    public AppointmentStatus getStatus() {
-        return status;
-    }
-
-    public void setStatus(AppointmentStatus status) {
-        this.status = status;
-    }
-
-    public LocalDateTime getCreatedAt() {
-        return createdAt;
-    }
-
-    public void setCreatedAt(LocalDateTime createdAt) {
-        this.createdAt = createdAt;
-    }
-
-    public LocalDateTime getUpdatedAt() {
-        return updatedAt;
-    }
-
-    public void setUpdatedAt(LocalDateTime updatedAt) {
-        this.updatedAt = updatedAt;
-    }
 
     // Utility methods
     public boolean isPending() {
@@ -293,12 +169,6 @@ public class Appointment {
         public Builder status(AppointmentStatus status) {
             this.status = status;
             return this;
-        }
-
-        public Appointment build() {
-            return new Appointment(serviceId, userId, customerName, contactInfo,
-                    device, issueDescription, appointmentDate,
-                    appointmentTime, status);
         }
     }
 }

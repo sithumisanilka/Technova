@@ -3,6 +3,7 @@ package com.solekta.solekta.controller;
 import com.solekta.solekta.dto.RegisterRequest;
 import com.solekta.solekta.dto.UserProfileResponse;
 import com.solekta.solekta.dto.UpdateProfileRequest;
+import com.solekta.solekta.enums.Role;
 import com.solekta.solekta.model.Profile;
 import com.solekta.solekta.model.User;
 import com.solekta.solekta.repository.ProfileRepository;
@@ -67,7 +68,7 @@ public class AuthController {
                 .lastName(request.getLastName() != null && !request.getLastName().trim().isEmpty() 
                          ? request.getLastName().trim() : "User")
                 .phone(request.getPhoneNumber())
-                .role(userRole)
+                .role(Role.valueOf(userRole))
                 .build();
         User savedUser = userRepository.save(user);
 
@@ -95,7 +96,7 @@ public class AuthController {
         User authenticatedUser = userRepository.findByUsername(user.getUsername())
                 .orElseThrow(() -> new RuntimeException("User not found"));
         
-        return jwtUtil.generateToken(authenticatedUser.getUsername(), authenticatedUser.getId(), authenticatedUser.getRole());
+        return jwtUtil.generateToken(authenticatedUser.getUsername(), authenticatedUser.getId(), authenticatedUser.getRole().toString());
     }
 
     // ✅ Get current user + profile
@@ -111,7 +112,7 @@ public class AuthController {
                 user.getId(),
                 user.getUsername(),
                 user.getEmail(),
-                user.getRole(),
+                user.getRole().toString(),
                 profile != null ? profile.getFirstName() : null,
                 profile != null ? profile.getLastName() : null,
                 profile != null ? profile.getPhoneNumber() : null

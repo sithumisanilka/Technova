@@ -46,7 +46,7 @@ public class UserController {
     @GetMapping("/me")
     public UserDTO getCurrentUser(@AuthenticationPrincipal org.springframework.security.core.userdetails.UserDetails userDetails) {
         User user = userService.findByUsername(userDetails.getUsername());
-        return new UserDTO(user.getId(), user.getUsername(), user.getEmail(), user.getRole());
+        return new UserDTO(user.getId(), user.getUsername(), user.getEmail(), user.getRole().toString());
     }
 }
 

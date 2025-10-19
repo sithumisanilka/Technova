@@ -1,4 +1,4 @@
-package com.solekta.solekta.model;
+package com.solekta.solekta.enums;
 
 public enum Role {
     USER,

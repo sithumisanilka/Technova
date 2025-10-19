@@ -283,3 +283,83 @@
     padding: 20px;
   }
 }
+
+/* Bank Transfer Section */
+.bank-transfer-section {
+  margin-top: 20px;
+  padding: 20px;
+  background: #f8f9fa;
+  border-radius: 8px;
+  border: 1px solid #e9ecef;
+}
+
+.bank-transfer-section h3 {
+  color: #333;
+  margin-bottom: 16px;
+  font-size: 1.1rem;
+  font-weight: 600;
+}
+
+.bank-info {
+  background: white;
+  padding: 16px;
+  border-radius: 6px;
+  margin-bottom: 20px;
+  border: 1px solid #dee2e6;
+}
+
+.bank-info p {
+  margin: 8px 0;
+  font-size: 0.95rem;
+}
+
+.bank-info strong {
+  color: #495057;
+  display: inline-block;
+  width: 140px;
+}
+
+.receipt-upload {
+  margin-top: 16px;
+}
+
+.file-label {
+  display: block;
+  font-weight: 600;
+  color: #333;
+  margin-bottom: 8px;
+}
+
+.required {
+  color: #dc3545;
+}
+
+.file-input {
+  width: 100%;
+  padding: 10px;
+  border: 2px dashed #ced4da;
+  border-radius: 6px;
+  background: white;
+  cursor: pointer;
+  transition: border-color 0.3s ease;
+}
+
+.file-input:hover {
+  border-color: #007bff;
+}
+
+.file-input:focus {
+  outline: none;
+  border-color: #007bff;
+  box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.1);
+}
+
+.file-preview {
+  margin-top: 10px;
+  padding: 8px 12px;
+  background: #e7f5e7;
+  border: 1px solid #c3e6c3;
+  border-radius: 4px;
+  color: #155724;
+  font-size: 0.9rem;
+}

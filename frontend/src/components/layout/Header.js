@@ -43,6 +43,9 @@ const Header = () => {
             <Link to="/products" className="nav-link" onClick={() => setIsMobileMenuOpen(false)}>
               Products
             </Link>
+            <Link to="/services" className="nav-link" onClick={() => setIsMobileMenuOpen(false)}>
+              Services
+            </Link>
             
             {/* Search Form */}
             <form onSubmit={handleSearch} className="search-form">
@@ -61,7 +64,7 @@ const Header = () => {
             {isAuthenticated() ? (
               <>
                 <Link to="/cart" className="cart-link" onClick={() => setIsMobileMenuOpen(false)}>
-                  🛒 Cart ({itemCount})
+                  🛒 Cart ({itemCount || 0})
                 </Link>
                 {isAdmin() && (
                   <Link to="/admin" className="nav-link admin-link" onClick={() => setIsMobileMenuOpen(false)}>

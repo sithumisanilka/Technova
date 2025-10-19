@@ -1,11 +1,13 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useCart } from '../context/CartContext';
+import { useAuth } from '../context/AuthContext';
 import { orderService } from '../services/orderService';
 import './Checkout.css';
 
 const Checkout = () => {
   const { cartItems, total, clearCart } = useCart();
+  const { user } = useAuth();
   const navigate = useNavigate();
   
   const [formData, setFormData] = useState({
@@ -16,9 +18,10 @@ const Checkout = () => {
     city: '',
     postalCode: '',
     phone: '',
-    paymentMethod: 'card'
+    paymentMethod: 'BANK_TRANSFER'
   });
 
+  const [receiptFile, setReceiptFile] = useState(null);
   const [isProcessing, setIsProcessing] = useState(false);
 
   const handleInputChange = (e) => {
@@ -28,47 +31,74 @@ const Checkout = () => {
     });
   };
 
+  const handleReceiptUpload = (e) => {
+    setReceiptFile(e.target.files[0]);
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setIsProcessing(true);
 
     try {
-      // Prepare order data
-      const orderData = {
-        userId: 1, // This should come from authentication
-        customerInfo: {
-          email: formData.email,
-          firstName: formData.firstName,
-          lastName: formData.lastName,
-          phone: formData.phone
-        },
-        shippingAddress: {
-          address: formData.address,
-          city: formData.city,
-          postalCode: formData.postalCode
-        },
-        paymentMethod: formData.paymentMethod,
-        items: cartItems.map(item => ({
-          productId: item.product.productId,
-          productName: item.product.productName,
-          quantity: item.quantity,
-          price: item.price,
-          total: item.price * item.quantity
-        })),
-        subtotal: total,
-        tax: Math.round(total * 0.1),
-        totalAmount: Math.round(total * 1.1),
-        status: 'PENDING'
-      };
+      // If payment method is bank transfer and no receipt file, show error
+      if (formData.paymentMethod === 'BANK_TRANSFER' && !receiptFile) {
+        alert('Please upload a bank transfer receipt for bank transfer payments.');
+        setIsProcessing(false);
+        return;
+      }
 
-      // Send order to backend
-      const order = await orderService.createOrder(orderData);
-      
-      // Clear cart after successful order
-      await clearCart();
-      
-      alert(`Order placed successfully! Order ID: ${order.orderId || order.id}`);
-      navigate('/products');
+      // Use multipart endpoint if receipt file is provided
+      if (receiptFile) {
+        const formDataToSend = new FormData();
+        formDataToSend.append('customerId', user?.id || 1);
+        formDataToSend.append('email', formData.email);
+        formDataToSend.append('shippingName', `${formData.firstName} ${formData.lastName}`);
+        formDataToSend.append('shippingAddress', formData.address);
+        formDataToSend.append('shippingCity', formData.city);
+        formDataToSend.append('shippingPostalCode', formData.postalCode);
+        formDataToSend.append('shippingPhone', formData.phone);
+        formDataToSend.append('paymentMethod', formData.paymentMethod);
+        formDataToSend.append('notes', '');
+        formDataToSend.append('receiptFile', receiptFile);
+
+        const response = await fetch('http://localhost:8081/api/orders/with-receipt', {
+          method: 'POST',
+          body: formDataToSend
+        });
+
+        if (!response.ok) {
+          throw new Error('Failed to place order');
+        }
+
+        const order = await response.json();
+        
+        // Clear cart after successful order
+        await clearCart();
+        
+        alert(`Order placed successfully! Order Number: ${order.orderNumber}`);
+        navigate('/products');
+      } else {
+        // Use regular JSON endpoint for orders without receipt
+        const orderData = {
+          customerId: user?.id || 1,
+          email: formData.email,
+          shippingName: `${formData.firstName} ${formData.lastName}`,
+          shippingAddress: formData.address,
+          shippingCity: formData.city,
+          shippingPostalCode: formData.postalCode,
+          shippingPhone: formData.phone,
+          paymentMethod: formData.paymentMethod,
+          notes: ''
+        };
+
+        const order = await orderService.createOrder(orderData);
+        
+        // Clear cart after successful order
+        await clearCart();
+        
+        alert(`Order placed successfully! Order Number: ${order.orderNumber}`);
+        navigate('/products');
+      }
     } catch (error) {
       console.error('Error placing order:', error);
       alert('Failed to place order. Please try again.');
@@ -91,8 +121,8 @@ const Checkout = () => {
     );
   }
 
-  const tax = Math.round(total * 0.1);
-  const finalTotal = total + tax;
+  const tax = Math.round((parseFloat(total) || 0) * 0.1);
+  const finalTotal = (parseFloat(total) || 0) + tax;
 
   return (
     <div className="checkout-container">
@@ -210,18 +240,8 @@ const Checkout = () => {
                   <input
                     type="radio"
                     name="paymentMethod"
-                    value="card"
-                    checked={formData.paymentMethod === 'card'}
-                    onChange={handleInputChange}
-                  />
-                  <span>💳 Credit/Debit Card</span>
-                </label>
-                <label className="payment-option">
-                  <input
-                    type="radio"
-                    name="paymentMethod"
-                    value="bank"
-                    checked={formData.paymentMethod === 'bank'}
+                    value="BANK_TRANSFER"
+                    checked={formData.paymentMethod === 'BANK_TRANSFER'}
                     onChange={handleInputChange}
                   />
                   <span>🏦 Bank Transfer</span>
@@ -230,13 +250,43 @@ const Checkout = () => {
                   <input
                     type="radio"
                     name="paymentMethod"
-                    value="cash"
-                    checked={formData.paymentMethod === 'cash'}
+                    value="CASH_ON_DELIVERY"
+                    checked={formData.paymentMethod === 'CASH_ON_DELIVERY'}
                     onChange={handleInputChange}
                   />
                   <span>💵 Cash on Delivery</span>
                 </label>
               </div>
+
+              {formData.paymentMethod === 'BANK_TRANSFER' && (
+                <div className="bank-transfer-section">
+                  <h3>Bank Transfer Details</h3>
+                  <div className="bank-info">
+                    <p><strong>Bank Name:</strong> Technova Bank</p>
+                    <p><strong>Account Number:</strong> 1234567890</p>
+                    <p><strong>Account Name:</strong> Technova E-Commerce</p>
+                    <p><strong>Branch:</strong> Main Branch</p>
+                  </div>
+                  <div className="receipt-upload">
+                    <label htmlFor="receipt" className="file-label">
+                      Upload Bank Transfer Receipt <span className="required">*</span>
+                    </label>
+                    <input
+                      type="file"
+                      id="receipt"
+                      accept="image/*,.pdf"
+                      onChange={handleReceiptUpload}
+                      className="file-input"
+                      required={formData.paymentMethod === 'BANK_TRANSFER'}
+                    />
+                    {receiptFile && (
+                      <div className="file-preview">
+                        <span>� {receiptFile.name}</span>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              )}
             </div>
 
             <button 
@@ -244,7 +294,7 @@ const Checkout = () => {
               disabled={isProcessing}
               className="btn btn-primary submit-btn"
             >
-              {isProcessing ? 'Processing...' : `Place Order - Rs. ${finalTotal.toLocaleString()}`}
+              {isProcessing ? 'Processing...' : `Place Order - Rs. ${isNaN(finalTotal) ? '0' : finalTotal.toLocaleString()}`}
             </button>
           </form>
         </div>
@@ -257,11 +307,24 @@ const Checkout = () => {
               {cartItems.map((item) => (
                 <div key={item.id} className="order-item">
                   <div className="item-info">
-                    <h4>{item.product.productName}</h4>
-                    <p>Qty: {item.quantity}</p>
+                    {item.itemType === 'SERVICE' ? (
+                      <>
+                        <h4>{item.serviceName || 'Service'}</h4>
+                        <p>Rental: {item.rentalPeriod || 0} {item.rentalPeriodType === 'HOURLY' ? 'hours' : 'days'}</p>
+                      </>
+                    ) : (
+                      <>
+                        <h4>{item.product?.productName || 'Product'}</h4>
+                        <p>Qty: {item.quantity || 0}</p>
+                      </>
+                    )}
                   </div>
                   <div className="item-total">
-                    Rs. {(item.price * item.quantity).toLocaleString()}
+                    {item.itemType === 'SERVICE' ? (
+                      <span>Rs. {(parseFloat(item.totalPrice) || 0).toLocaleString()}</span>
+                    ) : (
+                      <span>Rs. {((parseFloat(item.price) || 0) * (parseInt(item.quantity) || 0)).toLocaleString()}</span>
+                    )}
                   </div>
                 </div>
               ))}
@@ -270,7 +333,7 @@ const Checkout = () => {
             <div className="summary-calculations">
               <div className="summary-row">
                 <span>Subtotal</span>
-                <span>Rs. {total.toLocaleString()}</span>
+                <span>Rs. {isNaN(total) ? '0' : total.toLocaleString()}</span>
               </div>
               <div className="summary-row">
                 <span>Shipping</span>
@@ -278,12 +341,12 @@ const Checkout = () => {
               </div>
               <div className="summary-row">
                 <span>Tax (10%)</span>
-                <span>Rs. {tax.toLocaleString()}</span>
+                <span>Rs. {isNaN(tax) ? '0' : tax.toLocaleString()}</span>
               </div>
               <hr />
               <div className="summary-row total">
                 <span>Total</span>
-                <span>Rs. {finalTotal.toLocaleString()}</span>
+                <span>Rs. {isNaN(finalTotal) ? '0' : finalTotal.toLocaleString()}</span>
               </div>
             </div>
           </div>

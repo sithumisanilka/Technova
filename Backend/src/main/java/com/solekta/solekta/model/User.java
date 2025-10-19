@@ -1,5 +1,6 @@
 package com.solekta.solekta.model;
 
+import com.solekta.solekta.enums.Role;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 import lombok.Builder;
@@ -43,7 +44,7 @@ public class User {
 
     @Column(nullable = false)
     @Builder.Default
-    private String role = "USER";
+    private Role role = Role.USER;
 
     @CreationTimestamp
     private LocalDateTime createdAt;

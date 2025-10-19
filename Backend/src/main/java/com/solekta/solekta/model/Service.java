@@ -1,75 +1,70 @@
 package com.solekta.solekta.model;
 
 import jakarta.persistence.*;
+import lombok.*;
 import java.math.BigDecimal;
 
 @Entity
-@Table(name = "Service")
+@Table(name = "service")
+@Getter @Setter @Builder @NoArgsConstructor @AllArgsConstructor
+@ToString
+@EqualsAndHashCode
 public class Service {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "service_id")
-    private Integer serviceId;
+    private Long serviceId;
 
-    @Column(name = "service_name", nullable = false, length = 100)
+    @Column(name = "service_name", nullable = false, length = 200)
     private String serviceName;
 
     @Column(name = "description", columnDefinition = "TEXT")
     private String description;
 
-    @Column(name = "price", nullable = false, precision = 10, scale = 2)
-    private BigDecimal price;
+    @Column(name = "price_per_day", nullable = false, precision = 10, scale = 2)
+    private BigDecimal pricePerDay;
 
-    // Constructors
-    public Service() {}
+    @Column(name = "price_per_hour", precision = 10, scale = 2)
+    private BigDecimal pricePerHour;
 
-    public Service(String serviceName, String description, BigDecimal price) {
-        this.serviceName = serviceName;
-        this.description = description;
-        this.price = price;
-    }
+    @Column(name = "category", length = 100)
+    private String category;
 
-    // Getters and Setters
-    public Integer getServiceId() {
-        return serviceId;
-    }
+    @Column(name = "is_available")
+    @Builder.Default
+    private Boolean isAvailable = true;
 
-    public void setServiceId(Integer serviceId) {
-        this.serviceId = serviceId;
-    }
+    @Column(name = "min_rental_period")
+    @Builder.Default
+    private Integer minRentalPeriod = 1; // in hours
 
-    public String getServiceName() {
-        return serviceName;
-    }
+    @Column(name = "max_rental_period")
+    @Builder.Default
+    private Integer maxRentalPeriod = 720; // in hours (30 days)
 
-    public void setServiceName(String serviceName) {
-        this.serviceName = serviceName;
-    }
+    // Service Image Storage (as binary data)
+    @Lob
+    @Column(columnDefinition = "LONGBLOB")
+    private byte[] imageData;
 
-    public String getDescription() {
-        return description;
-    }
+    @Column(length = 255)
+    private String imageFileName;
 
-    public void setDescription(String description) {
-        this.description = description;
-    }
+    @Column(length = 100)
+    private String imageContentType;
 
+    // Helper method to get price (backward compatibility)
     public BigDecimal getPrice() {
-        return price;
+        return pricePerDay;
     }
 
     public void setPrice(BigDecimal price) {
-        this.price = price;
+        this.pricePerDay = price;
     }
 
-    @Override
-    public String toString() {
-        return "Service{" +
-                "serviceId=" + serviceId +
-                ", serviceName='" + serviceName + '\'' +
-                ", description='" + description + '\'' +
-                ", price=" + price +
-                '}';
+    public enum RentalPeriodType {
+        HOURLY,
+        DAILY
     }
 }
 

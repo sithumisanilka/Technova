@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useSearchParams, Link } from 'react-router-dom';
+import { useSearchParams, Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { useCart } from '../context/CartContext';
 import { productService } from '../services/ProductService';
@@ -10,6 +10,7 @@ const categories = ['Gaming', 'Business', 'Premium', 'Budget'];
 
 const Products = () => {
   const [searchParams, setSearchParams] = useSearchParams();
+  const navigate = useNavigate();
   const [viewMode, setViewMode] = useState('grid');
   const [selectedBrands, setSelectedBrands] = useState([]);
   const [selectedCategories, setSelectedCategories] = useState([]);
@@ -98,12 +99,17 @@ const Products = () => {
     }
   });
 
-  const handleAddToCart = (product) => {
+  const handleAddToCart = (product, event) => {
+    event.stopPropagation(); // Prevent navigation when clicking add to cart
     if (!isAuthenticated()) {
       alert("Please log in to add items to your cart!");
       return;
     }
     addItem(product, 1);
+  };
+
+  const handleProductClick = (productId) => {
+    navigate(`/product/${productId}`);
   };
 
   if (loading) {
@@ -268,7 +274,12 @@ const Products = () => {
 
           <div className={`products-grid ${viewMode}`}>
             {sortedProducts.map((product) => (
-              <div key={product.productId} className="product-card">
+              <div 
+                key={product.productId} 
+                className="product-card"
+                onClick={() => handleProductClick(product.productId)}
+                style={{ cursor: 'pointer' }}
+              >
                 <div className="product-image">
                   {product.imageUrl ? (
                     <img src={product.imageUrl} alt={product.productName} />
@@ -298,7 +309,7 @@ const Products = () => {
                     </span>
                     
                     <button
-                      onClick={() => handleAddToCart(product)}
+                      onClick={(e) => handleAddToCart(product, e)}
                       className="btn btn-primary add-to-cart-btn"
                       title={!isAuthenticated() ? "Please log in to add to cart" : "Add to cart"}
                     >

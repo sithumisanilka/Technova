@@ -7,10 +7,9 @@ import java.util.List;
 
 @Entity
 @Table(name = "category")
-@Data
-@Builder
-@NoArgsConstructor
-@AllArgsConstructor
+@Getter @Setter @Builder @NoArgsConstructor @AllArgsConstructor
+@ToString(exclude = "products")
+@EqualsAndHashCode(exclude = "products")
 public class Category {
 
         @Id

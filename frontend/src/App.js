@@ -4,6 +4,8 @@ import './App.css';
 import Layout from './components/layout/Layout';
 import Landing from './pages/Landing';
 import Products from './pages/Products';
+import Services from './pages/Services';
+import ProductDetails from './pages/ProductDetails';
 import Cart from './pages/Cart';
 import Checkout from './pages/Checkout';
 import NotFound from './pages/NotFound';
@@ -14,7 +16,6 @@ import UpdateProfile from './components/UpdateProfile';
 import ForgotPassword from './components/ForgotPassword';
 import AdminPanel from './components/AdminPanel';
 import ProtectedRoute from './components/ProtectedRoute';
-import CartDebug from './components/CartDebug';
 import { AuthProvider } from './context/AuthContext';
 import { CartProvider } from './context/CartContext';
 
@@ -28,6 +29,8 @@ function App() {
               {/* Public Routes */}
               <Route path="/" element={<Landing />} />
               <Route path="/products" element={<Products />} />
+              <Route path="/services" element={<Services />} />
+              <Route path="/product/:id" element={<ProductDetails />} />
               <Route path="/login" element={<Login />} />
               <Route path="/register" element={<Register />} />
               <Route path="/forgot-password" element={<ForgotPassword />} />
@@ -67,7 +70,6 @@ function App() {
               <Route path="*" element={<NotFound />} />
             </Routes>
           </Layout>
-          <CartDebug />
         </Router>
       </CartProvider>
     </AuthProvider>
