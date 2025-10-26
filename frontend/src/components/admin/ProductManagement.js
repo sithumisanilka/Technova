@@ -284,10 +284,8 @@ const ProductManagement = () => {
       product.productDescription?.toLowerCase().includes(searchTerm.toLowerCase());
     
     const matchesCategory = !filterCategory || 
-      (product.category && (
-        product.category.id === parseInt(filterCategory) ||
-        product.category.categoryName === filterCategory
-      ));
+      (product.categoryId && product.categoryId === parseInt(filterCategory)) ||
+      (product.categoryName === filterCategory);
 
     return matchesSearch && matchesCategory;
   });
@@ -334,7 +332,7 @@ const ProductManagement = () => {
           >
             <option value="">All Categories</option>
             {categories.map(category => (
-              <option key={category.id} value={category.id}>
+              <option key={category.categoryId} value={category.categoryId}>
                 {category.categoryName}
               </option>
             ))}
@@ -491,7 +489,7 @@ const ProductManagement = () => {
                 >
                   <option value="">Select Category</option>
                   {categories.map(category => (
-                    <option key={category.id} value={category.id}>
+                    <option key={category.categoryId} value={category.categoryId}>
                       {category.categoryName}
                     </option>
                   ))}

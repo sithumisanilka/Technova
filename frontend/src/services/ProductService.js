@@ -49,8 +49,10 @@ export const productService = {
       formData.append('brand', productData.brand || '');
       formData.append('imageUrls', productData.imageUrls || '');
       
-      if (productData.category?.id) {
-        formData.append('categoryId', productData.category.id);
+      if (productData.category?.categoryId) {
+        formData.append('categoryId', productData.category.categoryId);
+      } else if (productData.categoryId) {
+        formData.append('categoryId', productData.categoryId);
       }
       
       if (imageFile) {
