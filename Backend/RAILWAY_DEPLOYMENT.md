@@ -49,6 +49,13 @@ railway variables set SPRING_MAIL_PASSWORD="wtfj cxfk lgau iucc"
 railway up
 ```
 
+**Note**: The project now uses `nixpacks.toml` (Railway's preferred configuration) instead of `railway.toml`. Railway will automatically:
+1. Detect it's a Java Spring Boot application
+2. Use Maven to build the project
+3. Run the generated JAR file
+
+If you still encounter issues, Railway can also auto-detect without any configuration files.
+
 ### 4. Domain Configuration
 
 After deployment:
