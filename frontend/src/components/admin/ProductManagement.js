@@ -99,14 +99,13 @@ const ProductManagement = () => {
   const fetchCategories = async () => {
     try {
       const data = await categoryService.getAllCategories();
-      console.log('Categories from API:', data);
       setCategories(data);
     } catch (err) {
       console.error('Error fetching categories:', err);
       // Fallback to extracting from products if category service fails
       try {
         const products = await productService.getProducts();
-        const uniqueCategories = [...new Set(products.map(p => p.category?.categoryName).filter(Boolean))];
+        const uniqueCategories = [...new Set(products.map(p => p.categoryName || p.category?.categoryName).filter(Boolean))];
         setCategories(uniqueCategories.map(name => ({ categoryId: name, categoryName: name })));
       } catch (fallbackErr) {
         console.error('Error fetching categories fallback:', fallbackErr);
@@ -249,7 +248,6 @@ const ProductManagement = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      console.log('Form data categoryId:', formData.categoryId);
       const productData = {
         ...formData,
         price: parseFloat(formData.price),
@@ -257,7 +255,6 @@ const ProductManagement = () => {
         categoryId: formData.categoryId ? parseInt(formData.categoryId) : null,
         imageUrls: formData.imageUrls || ''
       };
-      console.log('Product data to send:', productData);
 
       if (editingProduct) {
         await productService.updateProduct(editingProduct.productId, productData);
@@ -389,7 +386,7 @@ const ProductManagement = () => {
                     </div>
                   </div>
                 </td>
-                <td>{product.category?.categoryName || 'Uncategorized'}</td>
+                <td>{product.categoryName || product.category?.categoryName || 'Uncategorized'}</td>
                 <td><strong>{formatPrice(product.price)}</strong></td>
                 <td>
                   <span className={`stock-badge ${product.quantity > 0 ? 'in-stock' : 'out-of-stock'}`}>
@@ -488,10 +485,7 @@ const ProductManagement = () => {
                 <select
                   className="form-control"
                   value={formData.categoryId}
-                  onChange={(e) => {
-                    console.log('Selected categoryId:', e.target.value);
-                    setFormData({...formData, categoryId: e.target.value});
-                  }}
+                  onChange={(e) => setFormData({...formData, categoryId: e.target.value})}
                 >
                   <option value="">Select Category</option>
                   {categories.map(category => (
