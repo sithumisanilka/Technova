@@ -28,19 +28,20 @@ railway link [project-id]
 You can set environment variables using Railway CLI or Dashboard:
 
 ```bash
-# Using Railway CLI
-railway variables set SPRING_DATASOURCE_URL="mysql://root:CukuutGHHsftrjFYLabrdadFEjnaJUdT@mysql.railway.internal:3306/railway"
+# Using Railway CLI - CORRECTED DATABASE URL FORMAT
+railway variables set DATABASE_URL="jdbc:mysql://mysql.railway.internal:3306/railway?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC"
 railway variables set SPRING_DATASOURCE_USERNAME="root"
 railway variables set SPRING_DATASOURCE_PASSWORD="CukuutGHHsftrjFYLabrdadFEjnaJUdT"
-railway variables set SPRING_DATASOURCE_DRIVER_CLASS_NAME="com.mysql.cj.jdbc.Driver"
 railway variables set SPRING_JPA_HIBERNATE_DDL_AUTO="update"
 railway variables set SPRING_JPA_SHOW_SQL="false"
 railway variables set CORS_ALLOWED_ORIGINS="https://your-frontend-app.railway.app,http://localhost:3000"
-railway variables set SPRING_MAIL_HOST="smtp.gmail.com"
-railway variables set SPRING_MAIL_PORT="587"
 railway variables set SPRING_MAIL_USERNAME="m7zipza@gmail.com"
 railway variables set SPRING_MAIL_PASSWORD="wtfj cxfk lgau iucc"
 ```
+
+**IMPORTANT DATABASE FIX:**
+The original URL format `mysql://root:password@host:port/db` needs to be converted to JDBC format:
+`jdbc:mysql://host:port/database?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC`
 
 ### 3. Deploy
 
