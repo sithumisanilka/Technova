@@ -61,7 +61,8 @@ const Checkout = () => {
         formDataToSend.append('notes', '');
         formDataToSend.append('receiptFile', receiptFile);
 
-        const response = await fetch('http://localhost:8081/api/orders/with-receipt', {
+        const apiBaseUrl = process.env.REACT_APP_API_BASE_URL || 'http://localhost:8081/api';
+        const response = await fetch(`${apiBaseUrl}/orders/with-receipt`, {
           method: 'POST',
           body: formDataToSend
         });

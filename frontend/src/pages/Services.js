@@ -14,9 +14,10 @@ const ServiceImage = ({ serviceId, serviceName }) => {
     const loadImage = async () => {
       try {
         // First try to load the image to check if it exists
-        const response = await fetch(`http://localhost:8081/api/services/${serviceId}/image`);
+        const apiBaseUrl = process.env.REACT_APP_API_BASE_URL || 'http://localhost:8081/api';
+        const response = await fetch(`${apiBaseUrl}/services/${serviceId}/image`);
         if (response.ok) {
-          setImageSrc(`http://localhost:8081/api/services/${serviceId}/image`);
+          setImageSrc(`${apiBaseUrl}/services/${serviceId}/image`);
         } else {
           setHasError(true);
         }

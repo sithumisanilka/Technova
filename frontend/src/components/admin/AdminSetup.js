@@ -22,7 +22,8 @@ const AdminSetup = () => {
 
   const fetchStats = async () => {
     try {
-      const response = await fetch('http://localhost:8080/api/admin/user-stats');
+      const apiBaseUrl = process.env.REACT_APP_API_BASE_URL || 'http://localhost:8081/api';
+      const response = await fetch(`${apiBaseUrl.replace('/api', '')}/api/admin/user-stats`);
       const data = await response.json();
       if (data.success) {
         setStats(data.statistics);
@@ -34,7 +35,8 @@ const AdminSetup = () => {
 
   const fetchAdmins = async () => {
     try {
-      const response = await fetch('http://localhost:8080/api/admin/admins');
+      const apiBaseUrl = process.env.REACT_APP_API_BASE_URL || 'http://localhost:8081/api';
+      const response = await fetch(`${apiBaseUrl.replace('/api', '')}/api/admin/admins`);
       const data = await response.json();
       if (data.success) {
         setAdmins(data.admins);
@@ -57,7 +59,8 @@ const AdminSetup = () => {
     setMessage('');
 
     try {
-      const response = await fetch('http://localhost:8080/api/admin/create-admin', {
+      const apiBaseUrl = process.env.REACT_APP_API_BASE_URL || 'http://localhost:8081/api';
+      const response = await fetch(`${apiBaseUrl.replace('/api', '')}/api/admin/create-admin`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
