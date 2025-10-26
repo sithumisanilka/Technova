@@ -135,7 +135,7 @@ const ProductManagement = () => {
       brand: product.brand || '',
       laptopSpec: product.laptopSpec || '',
       imageUrls: product.imageUrls || '',
-      categoryId: product.category?.categoryId || '',
+      categoryId: product.categoryId || product.category?.categoryId || '',
       isAvailable: product.isAvailable ?? true
     });
     setShowProductForm(true);
@@ -252,7 +252,7 @@ const ProductManagement = () => {
         ...formData,
         price: parseFloat(formData.price),
         quantity: parseInt(formData.quantity),
-        category: formData.categoryId ? { categoryId: formData.categoryId } : null,
+        categoryId: formData.categoryId ? parseInt(formData.categoryId) : null,
         imageUrls: formData.imageUrls || ''
       };
 
