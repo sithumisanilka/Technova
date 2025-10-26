@@ -84,12 +84,13 @@ public class SecurityConfig {
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
         
-        // Get allowed origins from environment variable, default to localhost for development
+        // Get allowed origins from environment variable, default to allow all for testing
         String allowedOrigins = System.getenv("CORS_ALLOWED_ORIGINS");
         if (allowedOrigins != null && !allowedOrigins.isEmpty()) {
             configuration.setAllowedOrigins(Arrays.asList(allowedOrigins.split(",")));
         } else {
-            configuration.setAllowedOrigins(Arrays.asList("http://localhost:3000"));
+            // Temporarily allow all origins for testing - UPDATE THIS FOR PRODUCTION
+            configuration.setAllowedOriginPatterns(Arrays.asList("*"));
         }
         
         configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
