@@ -117,7 +117,7 @@ const ProductManagement = () => {
     if (window.confirm('Are you sure you want to delete this product?')) {
       try {
         await productService.deleteProduct(productId);
-        setProducts(products.filter(p => p.id !== productId));
+        setProducts(products.filter(p => p.productId !== productId));
       } catch (err) {
         setError('Failed to delete product');
         console.error('Error deleting product:', err);
@@ -135,7 +135,7 @@ const ProductManagement = () => {
       brand: product.brand || '',
       laptopSpec: product.laptopSpec || '',
       imageUrls: product.imageUrls || '',
-      categoryId: product.category?.id || '',
+      categoryId: product.category?.categoryId || '',
       isAvailable: product.isAvailable ?? true
     });
     setShowProductForm(true);
@@ -252,12 +252,12 @@ const ProductManagement = () => {
         ...formData,
         price: parseFloat(formData.price),
         quantity: parseInt(formData.quantity),
-        category: formData.categoryId ? { id: formData.categoryId } : null,
+        category: formData.categoryId ? { categoryId: formData.categoryId } : null,
         imageUrls: formData.imageUrls || ''
       };
 
       if (editingProduct) {
-        await productService.updateProduct(editingProduct.id, productData);
+        await productService.updateProduct(editingProduct.productId, productData);
       } else {
         // Use the multipart upload for new products with images
         if (selectedImages.length > 0) {
@@ -369,7 +369,7 @@ const ProductManagement = () => {
           </thead>
           <tbody>
             {filteredProducts.map(product => (
-              <tr key={product.id}>
+              <tr key={product.productId}>
                 <td>
                   <div className="product-info">
                     <div className="product-image-container">
@@ -410,7 +410,7 @@ const ProductManagement = () => {
                       ✏️ Edit
                     </button>
                     <button 
-                      onClick={() => handleDelete(product.id)}
+                      onClick={() => handleDelete(product.productId)}
                       className="btn-danger btn-small"
                     >
                       🗑️ Delete
