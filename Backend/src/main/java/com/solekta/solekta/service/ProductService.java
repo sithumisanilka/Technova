@@ -55,12 +55,17 @@ public class ProductService {
         
         // Set category if provided
         if (categoryId != null) {
+            log.info("Setting category with ID: {}", categoryId);
             Optional<Category> categoryOpt = categoryRepository.findById(categoryId);
             if (categoryOpt.isPresent()) {
-                product.setCategory(categoryOpt.get());
+                Category category = categoryOpt.get();
+                product.setCategory(category);
+                log.info("Successfully set category: {} (ID: {})", category.getCategoryName(), category.getCategoryId());
             } else {
                 log.warn("Category with ID {} not found", categoryId);
             }
+        } else {
+            log.info("No categoryId provided in request");
         }
         
         // Handle image file upload

@@ -50,9 +50,16 @@ public class ProductController {
             @RequestParam(value = "categoryId", required = false) Long categoryId,
             @RequestParam(value = "imageFile", required = false) MultipartFile imageFile) {
         
+        System.out.println("=== Product Creation Debug ===");
+        System.out.println("Product Name: " + productName);
+        System.out.println("Category ID received: " + categoryId);
+        System.out.println("Image file: " + (imageFile != null ? imageFile.getOriginalFilename() : "null"));
+        
         Product product = productService.createProductWithImage(
                 productName, productDescription, laptopSpec, quantity, 
                 isAvailable, price, brand, imageUrls, categoryId, imageFile);
+        
+        System.out.println("Created product with category: " + (product.getCategory() != null ? product.getCategory().getCategoryId() : "null"));
         
         return ResponseEntity.ok(product);
     }

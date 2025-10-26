@@ -1,6 +1,7 @@
 package com.solekta.solekta.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -57,4 +58,16 @@ public class Product {
     @JoinColumn(name = "category_id") // Remove referencedColumnName or make it consistent
     @JsonIgnore
     private Category category;
+
+    // Add a method to expose categoryId in JSON without exposing full category
+    @JsonProperty("categoryId")
+    public Long getCategoryId() {
+        return category != null ? category.getCategoryId() : null;
+    }
+
+    // Add a method to expose category name in JSON
+    @JsonProperty("categoryName")
+    public String getCategoryName() {
+        return category != null ? category.getCategoryName() : null;
+    }
 }
