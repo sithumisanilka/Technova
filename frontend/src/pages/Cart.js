@@ -92,19 +92,19 @@ const Cart = () => {
           <div className="summary-details">
             <div className="summary-row">
               <span>Subtotal ({itemCount || 0} items)</span>
-              <span>₹{isNaN(total) ? '0.00' : total.toFixed(2)}</span>
+              <span>Rs. {isNaN(total) ? '0.00' : total.toFixed(2)}</span>
             </div>
             <div className="summary-row">
               <span>Shipping</span>
-              <span>₹500.00</span>
+              <span>Rs. 500.00</span>
             </div>
             <div className="summary-row">
               <span>Tax (10%)</span>
-              <span>₹{isNaN(total) ? '0.00' : (total * 0.1).toFixed(2)}</span>
+              <span>Rs. {isNaN(total) ? '0.00' : (total * 0.1).toFixed(2)}</span>
             </div>
             <div className="summary-row total">
               <span>Total</span>
-              <span>₹{isNaN(total) ? '500.00' : (total + 500 + (total * 0.1)).toFixed(2)}</span>
+              <span>Rs. {isNaN(total) ? '500.00' : (total + 500 + (total * 0.1)).toFixed(2)}</span>
             </div>
           </div>
 
@@ -141,7 +141,7 @@ const ProductCartItem = ({ item, onQuantityChange, onRemove }) => {
 
       <div className="item-details">
         <h3>{item.product?.productName}</h3>
-        <p className="item-price">₹{(parseFloat(item.price) || 0).toFixed(2)} each</p>
+        <p className="item-price">Rs. {(parseFloat(item.price) || 0).toFixed(2)} each</p>
       </div>
 
       <div className="item-controls">
@@ -163,7 +163,7 @@ const ProductCartItem = ({ item, onQuantityChange, onRemove }) => {
       </div>
 
       <div className="item-total">
-        <span>₹{((parseFloat(item.price) || 0) * (parseInt(item.quantity) || 0)).toFixed(2)}</span>
+        <span>Rs. {((parseFloat(item.price) || 0) * (parseInt(item.quantity) || 0)).toFixed(2)}</span>
       </div>
 
       <button 
@@ -192,7 +192,7 @@ const ServiceCartItem = ({ item, onRemove }) => {
       <div className="item-details">
         <h3>{item.serviceName}</h3>
         <p className="service-details">
-          ₹{(parseFloat(item.unitPrice) || 0).toFixed(2)} per {formatPeriodType(item.rentalPeriodType).slice(0, -3)}
+          Rs. {(parseFloat(item.unitPrice) || 0).toFixed(2)} per {formatPeriodType(item.rentalPeriodType).slice(0, -3)}
         </p>
         <p className="rental-info">
           Rental Period: {item.rentalPeriod || 0} {formatPeriodType(item.rentalPeriodType)}
@@ -206,7 +206,7 @@ const ServiceCartItem = ({ item, onRemove }) => {
       </div>
 
       <div className="item-total">
-        <span>₹{(parseFloat(item.totalPrice) || 0).toFixed(2)}</span>
+        <span>Rs. {(parseFloat(item.totalPrice) || 0).toFixed(2)}</span>
       </div>
 
       <button 

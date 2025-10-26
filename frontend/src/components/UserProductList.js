@@ -10,7 +10,7 @@ function UserProductList({ products }) {
         <thead>
           <tr>
             <th>Product Name</th>
-            <th>Price ($)</th>
+            <th>Price (Rs.)</th>
             <th>Category</th>
           </tr>
         </thead>

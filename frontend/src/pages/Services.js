@@ -242,9 +242,9 @@ const ServiceCard = ({ service, onAddToCart }) => {
         <div className="pricing">
           <div className="price-info">
             {service.pricePerHour && (
-              <span>₹{service.pricePerHour}/hour</span>
+              <span>Rs. {service.pricePerHour}/hour</span>
             )}
-            <span>₹{service.pricePerDay}/day</span>
+            <span>Rs. {service.pricePerDay}/day</span>
           </div>
         </div>
 
@@ -273,7 +273,7 @@ const ServiceCard = ({ service, onAddToCart }) => {
         </div>
 
         <div className="total-price">
-          <strong>Total: ₹{calculateTotal()}</strong>
+          <strong>Total: Rs. {calculateTotal()}</strong>
         </div>
 
         <button 

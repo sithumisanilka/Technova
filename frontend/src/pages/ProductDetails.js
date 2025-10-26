@@ -195,7 +195,7 @@ function ProductDetails() {
             </div>
 
             <div className="product-price">
-              <span className="price">${product.price}</span>
+              <span className="price">Rs. {product.price}</span>
               <div className="availability">
                 {product.isAvailable && product.quantity > 0 ? (
                   <span className="in-stock">✅ In Stock ({product.quantity} available)</span>
