@@ -1,6 +1,7 @@
 package com.solekta.solekta.controller;
 
 import com.solekta.solekta.model.Product;
+import com.solekta.solekta.dto.ProductRequest;
 import com.solekta.solekta.service.ProductService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -33,8 +34,16 @@ public class ProductController {
     }
 
     @PostMapping
-    public Product createProduct(@RequestBody Product product) {
-        return productService.saveProduct(product);
+    public Product createProduct(@RequestBody ProductRequest request) {
+        System.out.println("=== Regular Product Creation Debug ===");
+        System.out.println("Product Name: " + request.getProductName());
+        System.out.println("Category ID received: " + request.getCategoryId());
+        
+        Product product = productService.createProduct(request);
+        
+        System.out.println("Created product with category: " + (product.getCategory() != null ? product.getCategory().getCategoryId() : "null"));
+        
+        return product;
     }
 
     @PostMapping(value = "/with-image", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)

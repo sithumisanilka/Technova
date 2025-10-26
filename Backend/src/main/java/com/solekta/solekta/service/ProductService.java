@@ -39,6 +39,36 @@ public class ProductService {
         return productRepository.save(product);
     }
 
+    public Product createProduct(com.solekta.solekta.dto.ProductRequest request) {
+        Product product = new Product();
+        product.setProductName(request.getProductName());
+        product.setProductDescription(request.getProductDescription());
+        product.setLaptopSpec(request.getLaptopSpec());
+        product.setQuantity(request.getQuantity());
+        product.setIsAvailable(request.getIsAvailable() != null ? request.getIsAvailable() : 
+            (request.getQuantity() != null && request.getQuantity() > 0));
+        product.setPrice(request.getPrice());
+        product.setBrand(request.getBrand());
+        product.setImageUrls(request.getImageUrls());
+        
+        // Set category if provided
+        if (request.getCategoryId() != null) {
+            log.info("Setting category with ID: {}", request.getCategoryId());
+            Optional<Category> categoryOpt = categoryRepository.findById(request.getCategoryId());
+            if (categoryOpt.isPresent()) {
+                Category category = categoryOpt.get();
+                product.setCategory(category);
+                log.info("Successfully set category: {} (ID: {})", category.getCategoryName(), category.getCategoryId());
+            } else {
+                log.warn("Category with ID {} not found", request.getCategoryId());
+            }
+        } else {
+            log.info("No categoryId provided in request");
+        }
+        
+        return productRepository.save(product);
+    }
+
     public Product createProductWithImage(String productName, String productDescription, 
             String laptopSpec, Integer quantity, Boolean isAvailable, Double price, 
             String brand, String imageUrls, Long categoryId, MultipartFile imageFile) {
