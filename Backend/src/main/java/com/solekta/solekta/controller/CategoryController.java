@@ -40,7 +40,7 @@ public class CategoryController {
                 .map(existing -> {
                     // Update all fields
                     existing.setCategoryName(updatedCategory.getCategoryName());
-                    existing.setCategoryDescription(updatedCategory.getCategoryDescription());
+                    existing.setDescription(updatedCategory.getDescription());
                     return ResponseEntity.ok(categoryService.saveCategory(existing));
                 })
                 .orElse(ResponseEntity.notFound().build());
@@ -80,5 +80,10 @@ public class CategoryController {
     @GetMapping("/search")
     public List<Category> searchCategories(@RequestParam String keyword) {
         return categoryService.searchCategories(keyword);
+    }
+
+    @GetMapping("/test")
+    public ResponseEntity<String> testEndpoint() {
+        return ResponseEntity.ok("Category API is working!");
     }
 }

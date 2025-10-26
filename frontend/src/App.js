@@ -1,31 +1,75 @@
-import React, { useState } from "react";
-import ProductList from "../src/components/ProductList";   // Admin view
-import UserProductList from "../src/components/UserProductList"; // User view
+import React from 'react';
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import './App.css';
+import Layout from './components/layout/Layout';
+import Landing from './pages/Landing';
+import Products from './pages/Products';
+import Services from './pages/Services';
+import ProductDetails from './pages/ProductDetails';
+import Cart from './pages/Cart';
+import Checkout from './pages/Checkout';
+import NotFound from './pages/NotFound';
+
+import Profile from './components/Profile';
+import UpdateProfile from './components/UpdateProfile';
+import ForgotPassword from './components/ForgotPassword';
+import AdminPanel from './components/AdminPanel';
+import ProtectedRoute from './components/ProtectedRoute';
+import { AuthProvider } from './context/AuthContext';
+import { CartProvider } from './context/CartContext';
 
 function App() {
-  // Shared product state (so both admin & user can see products)
-  const [products, setProducts] = useState([]);
-
   return (
-    <div className="App">
-      <h1 style={{ textAlign: "center", margin: "20px 0" }}>
-        🛒 Product Management System
-      </h1>
-
-      {/* Admin Section */}
-      <section style={{ marginBottom: "40px" }}>
-        <h2 style={{ textAlign: "center" }}>Admin Panel</h2>
-        <ProductList products={products} setProducts={setProducts} />
-      </section>
-
-      <hr />
-
-      {/* User Section */}
-      <section>
-        <h2 style={{ textAlign: "center" }}>User View</h2>
-        <UserProductList products={products} />
-      </section>
-    </div>
+    <AuthProvider>
+      <CartProvider>
+        <Router>
+          <Layout>
+            <Routes>
+              {/* Public Routes */}
+              <Route path="/" element={<Landing />} />
+              <Route path="/products" element={<Products />} />
+              <Route path="/services" element={<Services />} />
+              <Route path="/product/:id" element={<ProductDetails />} />
+              <Route path="/forgot-password" element={<ForgotPassword />} />
+              
+              {/* Protected Routes - Require Authentication */}
+              <Route path="/cart" element={
+                <ProtectedRoute>
+                  <Cart />
+                </ProtectedRoute>
+              } />
+              
+              <Route path="/checkout" element={
+                <ProtectedRoute>
+                  <Checkout />
+                </ProtectedRoute>
+              } />
+              
+              <Route path="/profile" element={
+                <ProtectedRoute>
+                  <Profile />
+                </ProtectedRoute>
+              } />
+              
+              <Route path="/update-profile" element={
+                <ProtectedRoute>
+                  <UpdateProfile />
+                </ProtectedRoute>
+              } />
+              
+              <Route path="/admin" element={
+                <ProtectedRoute>
+                  <AdminPanel />
+                </ProtectedRoute>
+              } />
+              
+              {/* Catch-all route */}
+              <Route path="*" element={<NotFound />} />
+            </Routes>
+          </Layout>
+        </Router>
+      </CartProvider>
+    </AuthProvider>
   );
 }
 

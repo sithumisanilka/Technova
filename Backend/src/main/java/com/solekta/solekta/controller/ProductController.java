@@ -4,7 +4,10 @@ import com.solekta.solekta.model.Product;
 import com.solekta.solekta.service.ProductService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.MediaType;
+import org.springframework.http.HttpHeaders;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 import java.util.Optional;
@@ -32,6 +35,26 @@ public class ProductController {
     @PostMapping
     public Product createProduct(@RequestBody Product product) {
         return productService.saveProduct(product);
+    }
+
+    @PostMapping(value = "/with-image", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<Product> createProductWithImage(
+            @RequestParam("productName") String productName,
+            @RequestParam("productDescription") String productDescription,
+            @RequestParam("laptopSpec") String laptopSpec,
+            @RequestParam("quantity") Integer quantity,
+            @RequestParam("isAvailable") Boolean isAvailable,
+            @RequestParam("price") Double price,
+            @RequestParam("brand") String brand,
+            @RequestParam(value = "imageUrls", required = false) String imageUrls,
+            @RequestParam(value = "categoryId", required = false) Long categoryId,
+            @RequestParam(value = "imageFile", required = false) MultipartFile imageFile) {
+        
+        Product product = productService.createProductWithImage(
+                productName, productDescription, laptopSpec, quantity, 
+                isAvailable, price, brand, imageUrls, categoryId, imageFile);
+        
+        return ResponseEntity.ok(product);
     }
 
     @PutMapping("/{id}")
@@ -77,5 +100,28 @@ public class ProductController {
     @GetMapping("/search")
     public List<Product> searchProducts(@RequestParam String keyword) {
         return productService.searchProducts(keyword);
+    }
+
+    @GetMapping("/{id}/image")
+    public ResponseEntity<byte[]> getProductImage(@PathVariable Long id) {
+        try {
+            Optional<Product> productOpt = productService.getProductById(id);
+            
+            if (productOpt.isEmpty() || productOpt.get().getImageData() == null) {
+                return ResponseEntity.notFound().build();
+            }
+            
+            Product product = productOpt.get();
+            
+            HttpHeaders headers = new HttpHeaders();
+            headers.setContentType(MediaType.parseMediaType(product.getImageContentType()));
+            headers.setContentDispositionFormData("inline", product.getImageFileName());
+            
+            return ResponseEntity.ok()
+                    .headers(headers)
+                    .body(product.getImageData());
+        } catch (Exception e) {
+            return ResponseEntity.notFound().build();
+        }
     }
 }

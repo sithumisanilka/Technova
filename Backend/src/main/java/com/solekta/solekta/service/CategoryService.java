@@ -48,7 +48,7 @@ public class CategoryService {
 
     public Category saveCategory(Category category) {
         // Validate unique category name before saving
-        if (category.getCategoryId() == null && categoryRepository.existsByCategoryName(category.getCategoryName())) {
+        if (category.getId() == null && categoryRepository.existsByCategoryName(category.getCategoryName())) {
             throw new RuntimeException("Category with name '" + category.getCategoryName() + "' already exists");
         }
         return categoryRepository.save(category);
@@ -66,7 +66,7 @@ public class CategoryService {
 
         // Update fields
         category.setCategoryName(categoryDetails.getCategoryName());
-        category.setCategoryDescription(categoryDetails.getCategoryDescription());
+        category.setDescription(categoryDetails.getDescription());
 
         return categoryRepository.save(category);
     }

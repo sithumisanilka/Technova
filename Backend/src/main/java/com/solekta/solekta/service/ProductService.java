@@ -1,18 +1,27 @@
 package com.solekta.solekta.service;
 
 import com.solekta.solekta.model.Product;
+import com.solekta.solekta.model.Category;
 import com.solekta.solekta.repository.ProductRepository;
+import com.solekta.solekta.repository.CategoryRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
+import lombok.extern.slf4j.Slf4j;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
 
 @Service
+@Slf4j
 public class ProductService {
 
     @Autowired
     private ProductRepository productRepository;
+
+    @Autowired
+    private CategoryRepository categoryRepository;
 
     public List<Product> getAllProducts() {
         return productRepository.findAll();
@@ -27,6 +36,46 @@ public class ProductService {
         if (product.getIsAvailable() == null) {
             product.setIsAvailable(product.getQuantity() != null && product.getQuantity() > 0);
         }
+        return productRepository.save(product);
+    }
+
+    public Product createProductWithImage(String productName, String productDescription, 
+            String laptopSpec, Integer quantity, Boolean isAvailable, Double price, 
+            String brand, String imageUrls, Long categoryId, MultipartFile imageFile) {
+        
+        Product product = new Product();
+        product.setProductName(productName);
+        product.setProductDescription(productDescription);
+        product.setLaptopSpec(laptopSpec);
+        product.setQuantity(quantity);
+        product.setIsAvailable(isAvailable != null ? isAvailable : (quantity != null && quantity > 0));
+        product.setPrice(price);
+        product.setBrand(brand);
+        product.setImageUrls(imageUrls);
+        
+        // Set category if provided
+        if (categoryId != null) {
+            Optional<Category> categoryOpt = categoryRepository.findById(categoryId);
+            if (categoryOpt.isPresent()) {
+                product.setCategory(categoryOpt.get());
+            } else {
+                log.warn("Category with ID {} not found", categoryId);
+            }
+        }
+        
+        // Handle image file upload
+        if (imageFile != null && !imageFile.isEmpty()) {
+            try {
+                product.setImageData(imageFile.getBytes());
+                product.setImageFileName(imageFile.getOriginalFilename());
+                product.setImageContentType(imageFile.getContentType());
+                log.info("Product image uploaded: {}", imageFile.getOriginalFilename());
+            } catch (IOException e) {
+                log.error("Failed to process product image file: {}", e.getMessage());
+                throw new RuntimeException("Failed to process product image file", e);
+            }
+        }
+        
         return productRepository.save(product);
     }
 

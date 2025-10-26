@@ -6,10 +6,9 @@ import lombok.*;
 
 @Entity
 @Table(name = "product")
-@Getter
-@Setter
-@NoArgsConstructor
-@AllArgsConstructor
+@Getter @Setter @Builder @NoArgsConstructor @AllArgsConstructor
+@ToString(exclude = "category")
+@EqualsAndHashCode(exclude = "category")
 public class Product {
 
     @Id
@@ -26,9 +25,11 @@ public class Product {
     private String laptopSpec;
 
     @Column(nullable = false)
+    @Builder.Default
     private Integer quantity = 0;
 
     @Column(name = "is_available")
+    @Builder.Default
     private Boolean isAvailable = false;
 
     @Column(nullable = false)
@@ -37,8 +38,19 @@ public class Product {
     @Column(nullable = false)
     private String brand;
 
-    @Column(name = "image_urls", columnDefinition = "TEXT")
+    @Column(name = "image_urls", columnDefinition = "LONGTEXT")
     private String imageUrls;
+
+    // Product Image Storage (as binary data)
+    @Lob
+    @Column(columnDefinition = "LONGBLOB")
+    private byte[] imageData;
+
+    @Column(length = 255)
+    private String imageFileName;
+
+    @Column(length = 100)
+    private String imageContentType;
 
     // FIXED: Many products belong to one category
     @ManyToOne(fetch = FetchType.LAZY)

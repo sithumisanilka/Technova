@@ -18,64 +18,41 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
     List<Product> findByIsAvailableTrue();
 
     // Find products by category ID
-    List<Product> findByCategoryCategoryId(Long categoryId);
+    @Query("SELECT p FROM Product p WHERE p.category.id = :categoryId")
+    List<Product> findByCategoryCategoryId(@Param("categoryId") Long categoryId);
 
     // Search products by name or description
-    List<Product> findByProductNameContainingIgnoreCaseOrProductDescriptionContainingIgnoreCase(
-            String productName, String productDescription);
+    List<Product> findByProductNameContainingIgnoreCaseOrProductDescriptionContainingIgnoreCase(String name, String description);
 
     // Find products by brand
     List<Product> findByBrandContainingIgnoreCase(String brand);
 
-    // Find products by price range
+    // Find products within price range
     List<Product> findByPriceBetween(Double minPrice, Double maxPrice);
 
-    // Find low stock products
-    List<Product> findByQuantityLessThanEqual(Integer threshold);
+    // Find products with low stock
+    List<Product> findByQuantityLessThanEqual(Integer quantity);
 
-    // Find products with quantity greater than specified value
-    List<Product> findByQuantityGreaterThan(Integer quantity);
+    // Find products by availability status
+    List<Product> findByIsAvailable(Boolean isAvailable);
 
-    // Find by product name (exact match)
-    Optional<Product> findByProductName(String productName);
+    // Count total products
+    long count();
 
-    // Find by product name containing (case insensitive)
-    List<Product> findByProductNameContainingIgnoreCase(String productName);
+    // Custom query to find products by category name
+    @Query("SELECT p FROM Product p JOIN p.category c WHERE c.categoryName = :categoryName")
+    List<Product> findByCategoryName(@Param("categoryName") String categoryName);
 
-    // Custom query for complex searches
+    // Find products by multiple criteria
     @Query("SELECT p FROM Product p WHERE " +
-            "LOWER(p.productName) LIKE LOWER(CONCAT('%', :keyword, '%')) OR " +
-            "LOWER(p.productDescription) LIKE LOWER(CONCAT('%', :keyword, '%')) OR " +
-            "LOWER(p.brand) LIKE LOWER(CONCAT('%', :keyword, '%')) OR " +
-            "LOWER(p.laptopSpec) LIKE LOWER(CONCAT('%', :keyword, '%'))")
-    List<Product> comprehensiveSearch(@Param("keyword") String keyword);
-
-    // Custom query for products by category and availability
-    @Query("SELECT p FROM Product p WHERE p.category.categoryId = :categoryId AND p.isAvailable = true")
-    List<Product> findAvailableProductsByCategory(@Param("categoryId") Long categoryId);
-
-    // Custom query for products by brand and price range
-    @Query("SELECT p FROM Product p WHERE p.brand = :brand AND p.price BETWEEN :minPrice AND :maxPrice")
-    List<Product> findByBrandAndPriceRange(
-            @Param("brand") String brand,
-            @Param("minPrice") Double minPrice,
-            @Param("maxPrice") Double maxPrice);
-
-    // Count products by availability
-    Long countByIsAvailableTrue();
-
-    // Count products by category
-    Long countByCategoryCategoryId(Long categoryId);
-
-    // Check if product exists by name (for unique constraint validation)
-    Boolean existsByProductName(String productName);
-
-    // Find products ordered by price (ascending)
-    List<Product> findByOrderByPriceAsc();
-
-    // Find products ordered by price (descending)
-    List<Product> findByOrderByPriceDesc();
-
-    // Find available products ordered by price
-    List<Product> findByIsAvailableTrueOrderByPriceAsc();
+           "(:name IS NULL OR LOWER(p.productName) LIKE LOWER(CONCAT('%', :name, '%'))) AND " +
+           "(:brand IS NULL OR LOWER(p.brand) LIKE LOWER(CONCAT('%', :brand, '%'))) AND " +
+           "(:minPrice IS NULL OR p.price >= :minPrice) AND " +
+           "(:maxPrice IS NULL OR p.price <= :maxPrice) AND " +
+           "(:categoryId IS NULL OR p.category.id = :categoryId)")
+    List<Product> findProductsByFilters(@Param("name") String name,
+                                      @Param("brand") String brand,
+                                      @Param("minPrice") Double minPrice,
+                                      @Param("maxPrice") Double maxPrice,
+                                      @Param("categoryId") Long categoryId);
 }
