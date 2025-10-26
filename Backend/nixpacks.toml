@@ -1,3 +1,6 @@
+[variables]
+JAVA_VERSION = "17"
+
 [phases.build]
 cmds = ["mvn clean package -DskipTests"]
 
