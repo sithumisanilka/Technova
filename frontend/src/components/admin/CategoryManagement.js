@@ -37,7 +37,7 @@ const CategoryManagement = () => {
     if (window.confirm('Are you sure you want to delete this category? This action cannot be undone.')) {
       try {
         await categoryService.deleteCategory(categoryId);
-        setCategories(categories.filter(c => c.id !== categoryId));
+        setCategories(categories.filter(c => c.categoryId !== categoryId));
       } catch (err) {
         setError('Failed to delete category');
         console.error('Error deleting category:', err);
@@ -67,7 +67,7 @@ const CategoryManagement = () => {
     e.preventDefault();
     try {
       if (editingCategory) {
-        await categoryService.updateCategory(editingCategory.id, formData);
+        await categoryService.updateCategory(editingCategory.categoryId, formData);
       } else {
         await categoryService.createCategory(formData);
       }
@@ -139,7 +139,7 @@ const CategoryManagement = () => {
           </thead>
           <tbody>
             {filteredCategories.map(category => (
-              <tr key={category.id}>
+              <tr key={category.categoryId}>
                 <td>
                   <div className="category-info">
                     <div className="category-icon">📂</div>
@@ -165,7 +165,7 @@ const CategoryManagement = () => {
                       ✏️ Edit
                     </button>
                     <button 
-                      onClick={() => handleDelete(category.id)}
+                      onClick={() => handleDelete(category.categoryId)}
                       className="btn-danger btn-small"
                     >
                       🗑️ Delete
